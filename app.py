@@ -39,7 +39,7 @@ def index():
             file.save(filepath)
 
             #Extraction des features
-            file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected = get_image_features(filepath)
+            file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected, histogram , saturation_mean = get_image_features(filepath)
 
 
             # Crée une entrée dans la base de données
@@ -52,7 +52,10 @@ def index():
              g_mean=g_mean,
              b_mean=b_mean,
              contrast=contrast,
-             edges=edges_detected
+             edges=edges_detected ,
+             histogram=histogram , 
+             saturation_mean=saturation_mean
+
 
             )
             db.session.add(new_img)

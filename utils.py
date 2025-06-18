@@ -2,7 +2,8 @@ from PIL import Image as PILImage
 import cv2
 import numpy as np
 import os
-
+import json
+import colorsys
 
 def get_image_features(image_path):
     # Taille fichier en Ko
@@ -41,8 +42,28 @@ def get_image_features(image_path):
              edge_pixels = cv2.countNonZero(edges)
              total_pixels = img_cv.shape[0] * img_cv.shape[1]
              edges_detected = edge_pixels / total_pixels > 0.01  # seuil arbitraire de 1%
+        
+        # Histogramme compressé (16 classes pour R, G, B)
+        pixels_np = np.array(img.convert('RGB'))
+        hist = []
+        for i in range(3):  # R, G, B
+            channel_hist, _ = np.histogram(pixels_np[:, :, i], bins=16, range=(0, 256))
+            hist.extend(channel_hist.tolist())
+        histogram = json.dumps(hist)  # Pour stocker dans la BDD
+
+        # Convertir les pixels en tableau NumPy
+        pixels_np = np.array(img.convert('RGB')).reshape(-1, 3)
+
+        # Calcul de la saturation pour chaque pixel
+        saturations = []
+        for r, g, b in pixels_np:
+              r_, g_, b_ = r / 255.0, g / 255.0, b / 255.0
+              h, l, s = colorsys.rgb_to_hls(r_, g_, b_)
+              saturations.append(s)
+
+        saturation_mean = round(np.mean(saturations), 3)
 
 
-    return file_size, width, height, r_mean, g_mean, b_mean , contrast, edges_detected
+    return file_size, width, height, r_mean, g_mean, b_mean , contrast, edges_detected , histogram , saturation_mean
 
 

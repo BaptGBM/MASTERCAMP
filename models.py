@@ -18,3 +18,5 @@ class Image(db.Model):
     b_mean = db.Column(db.Float)
     contrast = db.Column(db.Float)
     edges = db.Column(db.Boolean)
+    histogram = db.Column(db.String)  # Stocké en JSON
+    saturation_mean = db.Column(db.Float)
