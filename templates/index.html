@@ -82,8 +82,11 @@
             color: var(--text-light);
         }
 
-        h1 {
+        h1, h3, h5 {
             font-weight: 600;
+        }
+
+        h1 {
             color: var(--green);
         }
 
@@ -161,7 +164,8 @@
 
         .card-img-top {
             height: 340px;
-            object-fit: cover;
+            object-fit: contain;
+            background-color: #fff;
         }
 
         .theme-switch {
@@ -180,12 +184,34 @@
 </head>
 <body class="container py-5">
 
+    <!-- Mode sombre toggle -->
     <div class="theme-switch form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="themeToggle">
         <label class="form-check-label" for="themeToggle">Dark Mode</label>
     </div>
 
-    <h1 class="mb-4">Wild Dump Prevention – Upload & Annotation</h1>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg bg-light rounded shadow-sm px-4 py-2 mb-4">
+        <a class="navbar-brand fw-bold text-success" href="#">
+            <i class="bi bi-recycle"></i> Wild Dump Prevention
+        </a>
+    </nav>
+
+    <!-- Intro / logo -->
+    <div class="text-center mb-5">
+        <img src="{{ url_for('static', filename='logo-green.png') }}" alt="Logo" height="80">
+        <p class="lead mt-3">Collecte, visualisation et annotation d’images pour prévenir les dépôts sauvages 🌿</p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="mb-5 text-center">
+        <h5 class="mb-3"><i class="bi bi-graph-up-arrow text-success"></i> Statistiques</h5>
+        <p>Total d’images : <strong>{{ images|length }}</strong></p>
+        <p><span class="text-danger">🟥 Pleines</span> : {{ images|selectattr('annotation', 'equalto', 'pleine')|list|length }}</p>
+        <p><span class="text-success">🟩 Vides</span> : {{ images|selectattr('annotation', 'equalto', 'vide')|list|length }}</p>
+    </div>
+
+    <h3 class="mb-4"><i class="bi bi-images"></i> Galerie des images annotables</h3>
 
     {% if success %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -201,6 +227,7 @@
     </div>
     {% endif %}
 
+    <!-- Upload form -->
     <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
             <input class="form-control" type="file" name="image" accept="image/png, image/jpeg">
@@ -211,6 +238,7 @@
 
     <hr>
 
+    <!-- Galerie -->
     <div class="row">
         {% for img in images %}
         <div class="col-md-4 my-3">
