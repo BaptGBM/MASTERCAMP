@@ -1,5 +1,8 @@
 from PIL import Image as PILImage
+import cv2
+import numpy as np
 import os
+
 
 def get_image_features(image_path):
     # Taille fichier en Ko
@@ -25,4 +28,21 @@ def get_image_features(image_path):
         g_mean = round(g_total / count, 2)
         b_mean = round(b_total / count, 2)
 
-    return file_size, width, height, r_mean, g_mean, b_mean
+         # Contraste : différence entre le pixel le plus sombre et le plus clair (en niveaux de gris)
+        gray = img.convert('L')
+        gray_pixels = list(gray.getdata())
+        contrast = round(max(gray_pixels) - min(gray_pixels), 2)
+
+         # Ouvrir avec OpenCV pour la détection de contours
+        img_cv = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        edges_detected = False
+        if img_cv is not None:
+             edges = cv2.Canny(img_cv, 100, 200)
+             edge_pixels = cv2.countNonZero(edges)
+             total_pixels = img_cv.shape[0] * img_cv.shape[1]
+             edges_detected = edge_pixels / total_pixels > 0.01  # seuil arbitraire de 1%
+
+
+    return file_size, width, height, r_mean, g_mean, b_mean , contrast, edges_detected
+
+

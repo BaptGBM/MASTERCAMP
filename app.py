@@ -7,11 +7,12 @@ from werkzeug.utils import secure_filename
 from utils import get_image_features
 
 
-
+# Initialisation de l’application Flask
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
+# Extensions de fichiers autorisées
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Vérifie si un fichier a une extension correcte
@@ -38,7 +39,8 @@ def index():
             file.save(filepath)
 
             #Extraction des features
-            file_size, width, height, r_mean, g_mean, b_mean = get_image_features(filepath)
+            file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected = get_image_features(filepath)
+
 
             # Crée une entrée dans la base de données
             new_img = Image(
@@ -48,7 +50,10 @@ def index():
              height=height,
              r_mean=r_mean,
              g_mean=g_mean,
-             b_mean=b_mean
+             b_mean=b_mean,
+             contrast=contrast,
+             edges=edges_detected
+
             )
             db.session.add(new_img)
             db.session.commit()
@@ -59,12 +64,13 @@ def index():
 
 @app.route('/annotate/<int:image_id>/<string:label>')
 def annotate(image_id, label):
-    image = Image.query.get_or_404(image_id)
-    image.annotation = label
+    image = Image.query.get_or_404(image_id)    # Met à jour l’annotation dans la base
+    image.annotation = label    # Met à jour l’annotation dans la base
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('index')) # redirige vers la page principale après l'annotation
 
+# Lancement de l'application
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+        db.create_all()  # Crée les tables de la BDD si elles n’existent pas
+    app.run(debug=True)  # Démarre le serveur Flask en mode debug

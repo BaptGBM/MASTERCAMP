@@ -1,8 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+# Initialise l'objet SQLAlchemy, utilisé pour manipuler la base de données
 db = SQLAlchemy()
 
+# Définition du modèle Image → correspond à une table dans la base de données
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(120), unique=True, nullable=False)
