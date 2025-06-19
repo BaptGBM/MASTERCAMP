@@ -31,7 +31,13 @@ def get_image_features(image_path):
 
          # Contraste : différence entre le pixel le plus sombre et le plus clair (en niveaux de gris)
         gray = img.convert('L')
-        gray_pixels = list(gray.getdata())
+        gray_pixels = np.array(gray.getdata())
+        dark_pixels = np.sum(gray_pixels < 30)  # Seuil de pixel sombre
+        dark_pixel_ratio = round(dark_pixels / gray_pixels.size, 3)
+        bright_pixels = np.sum(gray_pixels > 240)
+        has_bright_spot = bool(bright_pixels > 0.01 * gray_pixels.size)
+
+
         contrast = round(max(gray_pixels) - min(gray_pixels), 2)
 
          # Ouvrir avec OpenCV pour la détection de contours
@@ -64,6 +70,74 @@ def get_image_features(image_path):
         saturation_mean = round(np.mean(saturations), 3)
 
 
-    return file_size, width, height, r_mean, g_mean, b_mean , contrast, edges_detected , histogram , saturation_mean
+    return file_size, width, height, r_mean, g_mean, b_mean , contrast, edges_detected , histogram , saturation_mean , dark_pixel_ratio , has_bright_spot
 
+def auto_classify_score(r_mean, g_mean, b_mean, contrast, dark_pixel_ratio, has_bright_spot, saturation_mean, file_size, width, height):
+    """
+    Calcule un score de remplissage de poubelle entre 0 et 1.
+    Plus c’est proche de 1, plus la poubelle est probablement pleine.
+    """
+
+    score = 0
+    total_weight = 0
+
+    # Règle 1 : image sombre = poubelle pleine
+    if dark_pixel_ratio > 0.3:
+        score += 1 * 0.25
+    total_weight += 0.25
+
+    # Règle 2 : faible contraste → vide probable
+    if contrast < 50:
+        score += 0.3 * 0.1
+    else:
+        score += 1 * 0.1
+    total_weight += 0.1
+
+    # Règle 3 : couleurs très claires = vide
+    if r_mean > 180 and g_mean > 180 and b_mean > 180:
+        score += 0 * 0.1
+    else:
+        score += 1 * 0.1
+    total_weight += 0.1
+
+    # Règle 4 : saturation élevée = sacs colorés = pleine
+    if saturation_mean > 0.6:
+        score += 1 * 0.1
+    total_weight += 0.1
+
+    # Règle 5 : reflet + image claire = vide
+    if has_bright_spot and r_mean > 150:
+        score += 0 * 0.1
+    else:
+        score += 1 * 0.1
+    total_weight += 0.1
+
+    # Règle 6 : fichier très léger (< 100 Ko) = doute
+    if file_size < 100:
+        score += 0.3 * 0.1
+    else:
+        score += 1 * 0.1
+    total_weight += 0.1
+
+    # Règle 7 : image très petite = doute
+    image_size = width * height
+    if image_size < 200000:  # par exemple : 400x500
+        score += 0.2 * 0.05
+    else:
+        score += 1 * 0.05
+    total_weight += 0.05
+
+    # Règle 8 : couleurs déséquilibrées = sacs visibles
+    if abs(r_mean - g_mean) > 20 or abs(g_mean - b_mean) > 20:
+        score += 1 * 0.1
+    total_weight += 0.1
+
+    # Score final normalisé
+    final_score = round(score / total_weight, 3)
+    return final_score
+
+
+def auto_classify_by_score(*args, threshold=0.6):
+    score = auto_classify_score(*args)
+    return "pleine" if score >= threshold else "vide"
 

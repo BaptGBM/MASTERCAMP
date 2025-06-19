@@ -20,3 +20,5 @@ class Image(db.Model):
     edges = db.Column(db.Boolean)
     histogram = db.Column(db.String)  # Stocké en JSON
     saturation_mean = db.Column(db.Float)
+    dark_pixel_ratio = db.Column(db.Float)
+    has_bright_spot = db.Column(db.Boolean)
