@@ -1,6 +1,7 @@
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__)) # Chemin absolu du répertoire de base
+
 
 class Config:
     SECRET_KEY = 'dev'
