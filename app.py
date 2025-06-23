@@ -313,6 +313,25 @@ def api_get_image(image_id):
         "has_bright_spot": img.has_bright_spot
     })
 
+@app.route('/dashboard')
+def dashboard():
+    images = Image.query.order_by(Image.date_uploaded.desc()).all()
+    return render_template('dashboard.html', images=images)
+
+
+@app.route('/delete_rule/<int:rule_id>', methods=['POST'])
+def delete_rule(rule_id):
+    rule = Rule.query.get_or_404(rule_id)
+    db.session.delete(rule)
+    db.session.commit()
+    return redirect(url_for('config'))
+
+@app.route('/clear_history', methods=['POST'])
+def clear_history():
+    Image.query.delete()
+    db.session.commit()
+    return redirect(url_for('dashboard'))
+
 
 
 if __name__ == '__main__':
