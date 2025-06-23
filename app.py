@@ -6,6 +6,8 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from utils import get_image_features, auto_classify_score
 import uuid
+import csv
+from flask import Response, jsonify
 
 # Initialisation de l’application Flask
 app = Flask(__name__)
@@ -78,7 +80,204 @@ def annotate(image_id, label):
     db.session.commit()
     return redirect(url_for('index'))
 
+@app.route('/export/csv')
+def export_csv():
+    images = Image.query.all()
+
+    def generate():
+        yield 'ID,Filename,Date,Annotation,Score,Taille,Width,Height,R,G,B,Contrast,Saturation,DarkPixels,BrightSpot\n'
+        for img in images:
+            yield f"{img.id},{img.filename},{img.date_uploaded},{img.annotation or ''},{img.score or ''}," \
+                  f"{img.file_size},{img.width},{img.height},{img.r_mean},{img.g_mean},{img.b_mean}," \
+                  f"{img.contrast},{img.saturation_mean},{img.dark_pixel_ratio},{img.has_bright_spot}\n"
+
+    return Response(generate(), mimetype='text/csv',
+                    headers={"Content-Disposition": "attachment;filename=ecotrash_data.csv"})
+
+@app.route('/api/images')
+def api_images():
+    images = Image.query.order_by(Image.id.desc()).all()
+    data = []
+    for img in images:
+        data.append({
+            "id": img.id,
+            "filename": img.filename,
+            "date_uploaded": img.date_uploaded.isoformat(),
+            "annotation": img.annotation,
+            "score": img.score,
+            "file_size": img.file_size,
+            "width": img.width,
+            "height": img.height,
+            "r_mean": img.r_mean,
+            "g_mean": img.g_mean,
+            "b_mean": img.b_mean,
+            "contrast": img.contrast,
+            "saturation_mean": img.saturation_mean,
+            "dark_pixel_ratio": img.dark_pixel_ratio,
+            "has_bright_spot": img.has_bright_spot,
+        })
+    return jsonify(data)
+
+@app.route('/api/latest')
+def api_latest_image():
+    latest = Image.query.order_by(Image.id.desc()).first()
+    if not latest:
+        return jsonify({"error": "Aucune image trouvée"}), 404
+
+    return jsonify({
+        "id": latest.id,
+        "filename": latest.filename,
+        "date_uploaded": latest.date_uploaded,
+        "annotation": latest.annotation,
+        "score": latest.score,
+        "file_size": latest.file_size,
+        "width": latest.width,
+        "height": latest.height,
+        "r_mean": latest.r_mean,
+        "g_mean": latest.g_mean,
+        "b_mean": latest.b_mean,
+        "contrast": latest.contrast,
+        "saturation_mean": latest.saturation_mean,
+        "dark_pixel_ratio": latest.dark_pixel_ratio,
+        "has_bright_spot": latest.has_bright_spot
+    })
+
+@app.route('/api/image/<int:image_id>', methods=['PUT'])
+def api_update_annotation(image_id):
+    image = Image.query.get_or_404(image_id)
+    data = request.get_json()
+
+    if 'annotation' not in data:
+        return jsonify({"error": "Champ 'annotation' requis"}), 400
+
+    image.annotation = data['annotation']
+    db.session.commit()
+
+    return jsonify({"message": f"Image {image_id} mise à jour avec succès."})
+
+@app.route('/api/stats')
+def api_stats():
+    images = Image.query.all()
+    total = len(images)
+    pleines = [img for img in images if img.annotation == "pleine"]
+    vides = [img for img in images if img.annotation == "vide"]
+
+    moyenne_score = round(sum(img.score for img in images if img.score is not None) / total, 3) if total else 0
+    moyenne_pleines = round(sum(img.score for img in pleines if img.score is not None) / len(pleines), 3) if pleines else 0
+    moyenne_vides = round(sum(img.score for img in vides if img.score is not None) / len(vides), 3) if vides else 0
+
+    return jsonify({
+        "total_images": total,
+        "pleines": len(pleines),
+        "vides": len(vides),
+        "score_moyen": moyenne_score,
+        "score_moyen_pleines": moyenne_pleines,
+        "score_moyen_vides": moyenne_vides
+    })
+
+
+@app.route('/api/images')
+def api_filter_images():
+    annotation = request.args.get('annotation')
+
+    if annotation in ['pleine', 'vide']:
+        images = Image.query.filter_by(annotation=annotation).all()
+    else:
+        images = Image.query.all()
+
+    results = []
+    for img in images:
+        results.append({
+            "id": img.id,
+            "filename": img.filename,
+            "date_uploaded": img.date_uploaded,
+            "annotation": img.annotation,
+            "score": img.score,
+            "file_size": img.file_size,
+            "width": img.width,
+            "height": img.height,
+            "r_mean": img.r_mean,
+            "g_mean": img.g_mean,
+            "b_mean": img.b_mean,
+            "contrast": img.contrast,
+            "saturation_mean": img.saturation_mean,
+            "dark_pixel_ratio": img.dark_pixel_ratio,
+            "has_bright_spot": img.has_bright_spot
+        })
+
+    return jsonify(results)
+
+@app.route('/api/images')
+def api_filter_images_paginated():
+    annotation = request.args.get('annotation')
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+
+    query = Image.query
+    if annotation in ['pleine', 'vide']:
+        query = query.filter_by(annotation=annotation)
+
+    images = query.order_by(Image.date_uploaded.desc()).paginate(page=page, per_page=limit, error_out=False).items
+
+    results = []
+    for img in images:
+        results.append({
+            "id": img.id,
+            "filename": img.filename,
+            "date_uploaded": img.date_uploaded,
+            "annotation": img.annotation,
+            "score": img.score,
+            "file_size": img.file_size,
+            "width": img.width,
+            "height": img.height,
+            "r_mean": img.r_mean,
+            "g_mean": img.g_mean,
+            "b_mean": img.b_mean,
+            "contrast": img.contrast,
+            "saturation_mean": img.saturation_mean,
+            "dark_pixel_ratio": img.dark_pixel_ratio,
+            "has_bright_spot": img.has_bright_spot
+        })
+
+    return jsonify(results)
+
+@app.route('/api/image/<int:image_id>', methods=['DELETE'])
+def api_delete_image(image_id):
+    image = Image.query.get_or_404(image_id)
+
+    # Supprimer le fichier physique si présent
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
+    db.session.delete(image)
+    db.session.commit()
+    return jsonify({"status": "deleted", "id": image_id})
+
+@app.route('/api/image/<int:image_id>')
+def api_get_image(image_id):
+    img = Image.query.get_or_404(image_id)
+    return jsonify({
+        "id": img.id,
+        "filename": img.filename,
+        "date_uploaded": img.date_uploaded,
+        "annotation": img.annotation,
+        "score": img.score,
+        "file_size": img.file_size,
+        "width": img.width,
+        "height": img.height,
+        "r_mean": img.r_mean,
+        "g_mean": img.g_mean,
+        "b_mean": img.b_mean,
+        "contrast": img.contrast,
+        "saturation_mean": img.saturation_mean,
+        "dark_pixel_ratio": img.dark_pixel_ratio,
+        "has_bright_spot": img.has_bright_spot
+    })
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, port=5001)  # Change ici le port
+
