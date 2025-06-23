@@ -29,6 +29,26 @@
     <p class="text-lg">Historique des analyses effectuées sur les poubelles urbaines</p>
   </section>
 
+<!-- INDICATEUR GREEN IT -->
+<section class="text-center my-6">
+  <div class="inline-block bg-white rounded-xl shadow px-6 py-4 text-sm text-gray-700 space-y-1 border">
+    <p>🗂️ <strong>{{ nb_images }}</strong> images analysées</p>
+    <p>💾 <strong>{{ volume_mb }}</strong> Mo stockés</p>
+    <p>
+      🌱 Empreinte estimée : 
+      <span class="font-semibold px-2 py-1 rounded text-white
+        {% if co2 < 20 %} bg-green-500 
+        {% elif co2 < 50 %} bg-yellow-500 
+        {% else %} bg-red-500 
+        {% endif %}">
+        {{ co2 }} g CO₂
+      </span>
+    </p>
+  </div>
+</section>
+
+
+
   <!-- TABLEAU -->
   <main class="container mx-auto px-6 py-12 flex-grow">
     <div class="flex justify-end mb-4">

@@ -316,7 +316,22 @@ def api_get_image(image_id):
 @app.route('/dashboard')
 def dashboard():
     images = Image.query.order_by(Image.date_uploaded.desc()).all()
-    return render_template('dashboard.html', images=images)
+
+    nb_images = len(images)
+    total_volume_kb = sum(img.file_size for img in images)
+    total_volume_mb = total_volume_kb / 1024
+
+    # Approximation : 1 Mo = 5g CO2 (source variable)
+    co2_estime = total_volume_mb * 5
+
+    return render_template(
+        'dashboard.html',
+        images=images,
+        nb_images=nb_images,
+        volume_mb=round(total_volume_mb, 2),
+        co2=round(co2_estime, 1)
+    )
+
 
 
 @app.route('/delete_rule/<int:rule_id>', methods=['POST'])
