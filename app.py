@@ -30,11 +30,16 @@ def index():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
+            # Récupère l'annotation manuelle si fournie
+            manual_annotation = request.form.get('annotation_manual')
+
+            # Enregistre l’image localement
             ext = file.filename.rsplit('.', 1)[1].lower()
             filename = f"{uuid.uuid4().hex}.{ext}"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
+            # Extraction des features
             file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected, histogram, saturation_mean, dark_pixel_ratio, has_bright_spot = get_image_features(filepath)
 
             score = auto_classify_score(
@@ -56,11 +61,16 @@ def index():
                 "height": height
             }
 
+            # IA dynamique avec règles
             annotation_auto = classify_dynamic(features_dict, db.session)
 
-            if annotation_auto == "non défini":
-                annotation_auto = "pleine" if score >= 0.6 else "vide"
+            # Résultat final
+            if manual_annotation in ['pleine', 'vide']:
+                annotation_finale = manual_annotation
+            else:
+                annotation_finale = annotation_auto if annotation_auto != "non défini" else ("pleine" if score >= 0.6 else "vide")
 
+            # Enregistrement en base
             new_img = Image(
                 filename=filename,
                 file_size=file_size,
@@ -75,7 +85,7 @@ def index():
                 saturation_mean=saturation_mean,
                 dark_pixel_ratio=dark_pixel_ratio,
                 has_bright_spot=has_bright_spot,
-                annotation=annotation_auto,
+                annotation=annotation_finale,
                 score=score
             )
             db.session.add(new_img)
@@ -85,6 +95,7 @@ def index():
     images = Image.query.order_by(Image.id.desc()).all()
     last_image = images[0] if images else None
     return render_template('index.html', images=images, last_image=last_image)
+
 
 @app.route('/annotate/<int:image_id>/<string:label>')
 def annotate(image_id, label):
