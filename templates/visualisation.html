@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcoTrash - Visualisation</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen flex flex-col font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-green-400">EcoTrash</h1>
+      <nav>
+        <ul class="flex gap-6 text-sm">
+            <li><a href="#accueil" class="hover:underline">Accueil</a></li>
+            <li><a href="#upload" class="hover:underline">Analyse</a></li>
+            <a href="{{ url_for('dashboard') }}" class="hover:underline">Dashboard</a>
+            <li><a href="{{ url_for('config') }}" class="hover:underline">Configuration</a></li>
+            <li><a href="{{ url_for('visualisation') }}" class="hover:underline">Visualisation</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- TITRE -->
+  <section class="text-center py-16 bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+    <h2 class="text-4xl font-bold mb-2">📊 Visualisation des Données</h2>
+    <p class="text-lg">Répartition des annotations entre poubelles pleines et vides</p>
+  </section>
+
+  <!-- CONTENU -->
+  <main class="flex-grow container mx-auto px-6 py-12">
+    <div class="bg-white p-6 rounded-xl shadow-lg max-w-3xl mx-auto">
+      <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Répartition Pleine / Vide</h3>
+      <canvas id="pieChart" class="mb-6"></canvas>
+
+      <div class="text-sm text-center text-gray-600">
+        <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
+        <p><strong>Pleines :</strong> {{ pleines }}</p>
+        <p><strong>Vides :</strong> {{ vides }}</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 text-gray-300 py-6 text-center">
+    <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    const pleines = {{ pleines }};
+    const vides = {{ vides }};
+
+    const data = {
+      labels: ['Pleine', 'Vide'],
+      datasets: [{
+        label: 'Répartition des annotations',
+        data: [pleines, vides],
+        backgroundColor: ['#EF4444', '#10B981'], // rouge, vert
+        hoverOffset: 8,
+      }]
+    };
+
+    const config = {
+      type: 'doughnut',
+      data: data,
+      options: {
+        plugins: {
+          legend: {
+            position: 'bottom'
+          },
+          datalabels: {
+            color: '#fff',
+            font: {
+              weight: 'bold',
+              size: 16
+            },
+            formatter: (value, ctx) => {
+              let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+              let percent = (value / total * 100).toFixed(1) + '%';
+              return percent;
+            }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    };
+
+    new Chart(document.getElementById('pieChart'), config);
+  </script>
+
+</body>
+</html>

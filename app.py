@@ -358,6 +358,14 @@ def clear_history():
     db.session.commit()
     return redirect(url_for('dashboard'))
 
+@app.route('/visualisation')
+def visualisation():
+    # Statistiques nécessaires
+    total = Image.query.count()
+    pleines = Image.query.filter_by(annotation='pleine').count()
+    vides = Image.query.filter_by(annotation='vide').count()
+    return render_template("visualisation.html", total=total, pleines=pleines, vides=vides)
+
 
 
 if __name__ == '__main__':
