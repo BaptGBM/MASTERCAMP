@@ -24,3 +24,10 @@ class Image(db.Model):
     has_bright_spot = db.Column(db.Boolean)
     score = db.Column(db.Float)  # score IA entre 0 et 1
 
+class Rule(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    feature = db.Column(db.String(50))        # ex: 'r_mean'
+    operator = db.Column(db.String(5))        # ex: '<', '>', '=='
+    threshold = db.Column(db.Float)           # ex: 100.0
+    label = db.Column(db.String(10))          # ex: 'pleine'
+    confidence = db.Column(db.Integer)        # ex: 85 (%)

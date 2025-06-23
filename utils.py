@@ -4,6 +4,7 @@ import numpy as np
 import os
 import json
 import colorsys
+from models import Rule
 
 def get_image_features(image_path):
     # Taille fichier en Ko
@@ -141,3 +142,24 @@ def auto_classify_by_score(*args, threshold=0.6):
     score = auto_classify_score(*args)
     return "pleine" if score >= threshold else "vide"
 
+def classify_dynamic(features_dict, session):
+    """
+    Applique les règles stockées en base pour déterminer une classification.
+    - features_dict : dictionnaire {nom_feature: valeur}
+    - session : db.session (à passer depuis Flask)
+    """
+    rules = session.query(Rule).all()
+
+    for rule in rules:
+        value = features_dict.get(rule.feature)
+        if value is None:
+            continue
+
+        expression = f"{value} {rule.operator} {rule.threshold}"
+        try:
+            if eval(expression):
+                return rule.label  # première règle satisfaite = classification appliquée
+        except Exception as e:
+            print(f"Erreur évaluation règle : {expression} – {e}")
+
+    return "non défini"

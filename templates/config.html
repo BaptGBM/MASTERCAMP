@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration - EcoTrash</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-green-400">EcoTrash</h1>
+      <nav>
+        <ul class="flex gap-6 text-sm">
+          <li><a href="{{ url_for('index') }}#accueil" class="hover:underline">Accueil</a></li>
+          <li><a href="{{ url_for('index') }}#upload" class="hover:underline">Analyse</a></li>
+          <li><a href="{{ url_for('index') }}#dashboard" class="hover:underline">Dashboard</a></li>
+          <li><a href="{{ url_for('config') }}" class="underline text-green-400">Configuration</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- TITRE -->
+  <section class="py-16 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+    <h2 class="text-4xl font-bold mb-2">⚙️ Configuration des Règles</h2>
+    <p class="text-lg">Définissez les règles conditionnelles utilisées pour classer automatiquement les images</p>
+  </section>
+
+  <!-- CONTENU -->
+  <main class="container mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-10">
+
+    <!-- Bloc Règles Actuelles -->
+    <div class="bg-white p-6 rounded-xl shadow-md border">
+      <h3 class="text-xl font-semibold mb-4 text-blue-700">📌 Règles Actives</h3>
+      {% if rules %}
+        <ul class="space-y-2">
+          {% for rule in rules %}
+            <li class="bg-gray-100 p-3 rounded-md text-sm text-gray-800 border">
+              Si <strong>{{ rule.feature }}</strong> {{ rule.operator }} {{ rule.threshold }}
+              → <span class="text-green-600 font-bold">{{ rule.label }}</span>
+              ({{ rule.confidence }}%)
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-gray-500">Aucune règle définie pour le moment.</p>
+      {% endif %}
+    </div>
+
+    <!-- Formulaire Ajout Règle -->
+    <div class="bg-white p-6 rounded-xl shadow-md border">
+      <h3 class="text-xl font-semibold mb-4 text-purple-700">➕ Ajouter une Nouvelle Règle</h3>
+      <form method="POST" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Caractéristique</label>
+            <select name="feature" class="w-full border rounded px-2 py-1">
+              <option value="r_mean">Rouge moyen</option>
+              <option value="g_mean">Vert moyen</option>
+              <option value="b_mean">Bleu moyen</option>
+              <option value="contrast">Contraste</option>
+              <option value="file_size">Taille du fichier (Ko)</option>
+              <option value="saturation_mean">Saturation</option>
+              <option value="dark_pixel_ratio">Ratio de pixels sombres</option>
+              <option value="width">Largeur</option>
+              <option value="height">Hauteur</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Opérateur</label>
+            <select name="operator" class="w-full border rounded px-2 py-1">
+              <option value="<">&lt;</option>
+              <option value=">">&gt;</option>
+              <option value="<=">&le;</option>
+              <option value=">=">&ge;</option>
+              <option value="==">==</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Valeur</label>
+            <input type="number" step="0.01" name="threshold" class="w-full border rounded px-2 py-1" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Classification</label>
+            <select name="label" class="w-full border rounded px-2 py-1">
+              <option value="vide">Vide</option>
+              <option value="pleine">Pleine</option>
+              <option value="moitié">Moitié</option>
+              <option value="critique">Critique</option>
+            </select>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Confiance (%)</label>
+            <input type="number" name="confidence" min="0" max="100" class="w-full border rounded px-2 py-1" value="80">
+          </div>
+        </div>
+        <div class="text-right">
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 text-gray-300 py-6 text-center">
+    <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
+  </footer>
+
+</body>
+</html>
