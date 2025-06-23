@@ -44,28 +44,83 @@
       <div class="p-6 border rounded-xl shadow-md">
         <h3 class="text-xl font-semibold mb-4 text-blue-600">Upload & Informations</h3>
         <form action="/" method="POST" enctype="multipart/form-data">
-          <div class="border-dashed border-2 border-blue-400 rounded-xl p-10 text-center bg-blue-50">
-            <p class="mb-2 text-gray-500">Zone de Capture</p>
-            <input type="file" name="image" class="mb-4 mx-auto block w-full" accept="image/*" required>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Analyser l'image</button>
-            <p class="text-sm text-gray-400 mt-2">Formats : JPG, PNG | Max : 10 MB</p>
-          </div>
-        </form>
+            <div class="border-dashed border-2 border-blue-400 rounded-xl p-10 text-center bg-blue-50">
+              <p class="mb-2 text-gray-500">Zone de Capture</p>
+          
+              <!-- Champ input invisible avec onchange -->
+              <input 
+                type="file" 
+                name="image" 
+                id="imageInput" 
+                accept="image/*" 
+                required 
+                class="hidden" 
+                onchange="updateFileName(this)">
+          
+              <!-- Bouton qui déclenche le champ input -->
+              <button 
+                type="button"
+                onclick="document.getElementById('imageInput').click();"
+                class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mb-2">
+                Choisir une image
+              </button>
+          
+              <!-- Affichage du nom de fichier -->
+              <p id="fileName" class="text-sm text-gray-600 mb-4">Aucun fichier sélectionné</p>
+          
+              <!-- Bouton de soumission -->
+              <button type="submit" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+                Analyser l'image
+              </button>
+          
+              <p class="text-sm text-gray-400 mt-2">Formats : JPG, PNG | Max : 10 MB</p>
+            </div>
+          </form>
+          
       </div>
 
-      <!-- Zone de résultat -->
       <div class="p-6 border rounded-xl shadow-md">
         <h3 class="text-xl font-semibold mb-4 text-cyan-600">Résultats & Classification</h3>
-        <div class="bg-gray-100 h-72 flex items-center justify-center text-gray-400 rounded-lg">
-          <p>L’aperçu et l’analyse apparaîtront ici après l'upload.</p>
-        </div>
+      
+        {% if last_image %}
+          <div class="space-y-4">
+            <img src="{{ url_for('static', filename='uploads/' + last_image.filename) }}" alt="Poubelle" class="w-full rounded shadow-md max-h-64 object-contain">
+            
+            <div class="text-sm">
+              <p><strong>Nom du fichier :</strong> {{ last_image.filename }}</p>
+              <p><strong>Taille :</strong> {{ last_image.file_size }} Ko</p>
+              <p><strong>Dimensions :</strong> {{ last_image.width }} x {{ last_image.height }}</p>
+              <p><strong>Remplissage estimé :</strong> 
+                <span class="px-2 py-1 rounded text-white {% if last_image.annotation == 'pleine' %} bg-red-500 {% else %} bg-green-500 {% endif %}">
+                  {{ last_image.annotation | capitalize }}
+                </span>
+              </p>
+              <p><strong>Score de confiance :</strong> {{ (last_image.score * 100) | round(1) if last_image.score else 'N/A' }} %</p>
+            </div>
+          </div>
+        {% else %}
+          <div class="bg-gray-100 h-72 flex items-center justify-center text-gray-400 rounded-lg">
+            <p>L’aperçu et l’analyse apparaîtront ici après l'upload.</p>
+          </div>
+        {% endif %}
       </div>
-    </div>
+      
   </section>
 
   <!-- FOOTER -->
   <footer class="bg-gray-900 text-gray-300 py-6 text-center">
     <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
   </footer>
+  <script>
+    function updateFileName(input) {
+      const fileNameDisplay = document.getElementById('fileName');
+      if (input.files.length > 0) {
+        fileNameDisplay.textContent = "Fichier sélectionné : " + input.files[0].name;
+      } else {
+        fileNameDisplay.textContent = "Aucun fichier sélectionné";
+      }
+    }
+  </script>
+  
 </body>
 </html>

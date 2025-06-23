@@ -22,3 +22,5 @@ class Image(db.Model):
     saturation_mean = db.Column(db.Float)
     dark_pixel_ratio = db.Column(db.Float)
     has_bright_spot = db.Column(db.Boolean)
+    score = db.Column(db.Float)  # score IA entre 0 et 1
+
