@@ -9,6 +9,9 @@ import uuid
 import csv
 from flask import Response, jsonify
 
+
+
+
 # Initialisation de l’application Flask
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -73,21 +76,22 @@ def index():
             # Enregistrement en base
             new_img = Image(
                 filename=filename,
-                file_size=file_size,
-                width=width,
-                height=height,
-                r_mean=r_mean,
-                g_mean=g_mean,
-                b_mean=b_mean,
-                contrast=contrast,
-                edges=edges_detected,
-                histogram=histogram,
-                saturation_mean=saturation_mean,
-                dark_pixel_ratio=dark_pixel_ratio,
-                has_bright_spot=has_bright_spot,
+                file_size=float(file_size),
+                width=int(width),
+                height=int(height),
+                r_mean=float(r_mean),
+                g_mean=float(g_mean),
+                b_mean=float(b_mean),
+                contrast=int(contrast),
+                edges=bool(edges_detected),
+                histogram=str(histogram),  # important ! JSON ou string, pas d'objet numpy
+                saturation_mean=float(saturation_mean),
+                dark_pixel_ratio=float(dark_pixel_ratio),
+                has_bright_spot=bool(has_bright_spot),
                 annotation=annotation_finale,
-                score=score
+                score=float(score)
             )
+
             db.session.add(new_img)
             db.session.commit()
             return redirect(url_for('index'))

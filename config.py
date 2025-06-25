@@ -4,8 +4,6 @@ basedir = os.path.abspath(os.path.dirname(__file__)) # Chemin absolu du réperto
 
 
 class Config:
-    SECRET_KEY = 'dev'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+   SQLALCHEMY_DATABASE_URI = "postgresql://postgres:ySZCvNQtaYMOwErbMrnTIJPpNtrpxNbj@yamanote.proxy.rlwy.net:10386/railway"
+   SQLALCHEMY_TRACK_MODIFICATIONS = False
+   UPLOAD_FOLDER = "static/uploads"
