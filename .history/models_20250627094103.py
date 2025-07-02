@@ -23,8 +23,6 @@ class Image(db.Model):
     dark_pixel_ratio = db.Column(db.Float)
     has_bright_spot = db.Column(db.Boolean)
     score = db.Column(db.Float)  # score IA entre 0 et 1
-    latitude = db.Column(db.Float, nullable=True)  # Position latitude
-    longitude = db.Column(db.Float, nullable=True) # Position longitude
 
 class Rule(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -10,12 +10,12 @@ def get_image_features(image_path):
     # Taille fichier en Ko
     file_size = round(os.path.getsize(image_path) / 1024, 2)  # Ko
 
-    # Ouvrir l'image avec PIL
+    # Ouvrir l’image avec PIL
     with PILImage.open(image_path) as img:
         width, height = img.size
         pixels = list(img.getdata())
 
-        # Convertir en RGB si l'image est en mode L ou autre
+        # Convertir en RGB si l’image est en mode L ou autre
         if img.mode != 'RGB':
             img = img.convert('RGB')
             pixels = list(img.getdata())
@@ -76,7 +76,7 @@ def get_image_features(image_path):
 def auto_classify_score(r_mean, g_mean, b_mean, contrast, dark_pixel_ratio, has_bright_spot, saturation_mean, file_size, width, height):
     """
     Calcule un score de remplissage de poubelle entre 0 et 1.
-    Plus c'est proche de 1, plus la poubelle est probablement pleine.
+    Plus c’est proche de 1, plus la poubelle est probablement pleine.
     """
 
     score = 0
@@ -163,42 +163,3 @@ def classify_dynamic(features_dict, session):
             print(f"Erreur évaluation règle : {expression} – {e}")
 
     return "non défini"
-
-def get_exif_gps(image_path):
-    """
-    Extrait la latitude et la longitude GPS depuis les métadonnées EXIF d'une image (si présentes).
-    Retourne (latitude, longitude) ou (None, None) si absent.
-    """
-    try:
-        with PILImage.open(image_path) as img:
-            exif = img._getexif()
-            if not exif:
-                return None, None
-            from PIL.ExifTags import TAGS, GPSTAGS
-            gps_info = None
-            for tag, value in exif.items():
-                decoded = TAGS.get(tag, tag)
-                if decoded == "GPSInfo":
-                    gps_info = value
-                    break
-            if not gps_info:
-                return None, None
-            def _convert_to_degrees(value):
-                d, m, s = value
-                return float(d[0]) / float(d[1]) + float(m[0]) / float(m[1]) / 60 + float(s[0]) / float(s[1]) / 3600
-            lat = lon = None
-            gps_latitude = gps_info.get(2)
-            gps_latitude_ref = gps_info.get(1)
-            gps_longitude = gps_info.get(4)
-            gps_longitude_ref = gps_info.get(3)
-            if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
-                lat = _convert_to_degrees(gps_latitude)
-                if gps_latitude_ref != 'N':
-                    lat = -lat
-                lon = _convert_to_degrees(gps_longitude)
-                if gps_longitude_ref != 'E':
-                    lon = -lon
-                return lat, lon
-    except Exception as e:
-        print(f"Erreur extraction EXIF GPS : {e}")
-    return None, None

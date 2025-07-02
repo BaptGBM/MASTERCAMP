@@ -25,7 +25,7 @@
           <a href="{{ url_for('dashboard') }}" class="hover:underline">Dashboard</a>
           <li><a href="{{ url_for('config') }}" class="hover:underline">Configuration</a></li>
           <li><a href="{{ url_for('visualisation') }}" class="hover:underline">Visualisation</a></li>
-          <li><a href="{{ url_for('map_view') }}" class="hover:underline">Carte</a></li>
+
         </ul>
       </nav>
     </div>
@@ -44,7 +44,7 @@
       <!-- Zone de capture -->
       <div class="p-6 border rounded-xl shadow-md">
         <h3 class="text-xl font-semibold mb-4 text-blue-600">Upload & Informations</h3>
-        <form action="/" method="POST" enctype="multipart/form-data" onsubmit="return validateLocation();">
+        <form action="/" method="POST" enctype="multipart/form-data">
             <div class="border-dashed border-2 border-blue-400 rounded-xl p-10 text-center bg-blue-50">
               <p class="mb-2 text-gray-500">Zone de Capture</p>
           
@@ -184,11 +184,7 @@
       if (map) {
         map.remove();
       }
-      // Si coordonnées fournies, centrer la carte dessus
-      var defaultLat = {{ last_lat if last_lat is not none else 48.8566 }};
-      var defaultLon = {{ last_lon if last_lon is not none else 2.3522 }};
-      var hasDefault = {{ 'true' if last_lat and last_lon else 'false' }};
-      map = L.map('map').setView([defaultLat, defaultLon], hasDefault ? 16 : 12);
+      map = L.map('map').setView([48.8566, 2.3522], 12); // Paris par défaut
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap',
         maxZoom: 19,
@@ -208,18 +204,7 @@
         {% endif %}
       {% endfor %}
 
-      // Si coordonnées fournies, placer le marqueur automatiquement
-      if (hasDefault) {
-        marker = L.marker([defaultLat, defaultLon], {draggable: true}).addTo(map);
-        document.getElementById('latitudeInput').value = defaultLat;
-        document.getElementById('longitudeInput').value = defaultLon;
-        marker.on('dragend', function(ev) {
-          const pos = ev.target.getLatLng();
-          document.getElementById('latitudeInput').value = pos.lat;
-          document.getElementById('longitudeInput').value = pos.lng;
-        });
-      }
-      // Clic sur la carte pour placer ou déplacer le marqueur
+      // Clic sur la carte pour placer le marqueur
       map.on('click', function(e) {
         const { lat, lng } = e.latlng;
         if (marker) {
@@ -235,21 +220,6 @@
           document.getElementById('longitudeInput').value = pos.lng;
         });
       });
-    }
-
-    function validateLocation() {
-      const lat = document.getElementById('latitudeInput').value;
-      const lon = document.getElementById('longitudeInput').value;
-      if (!lat || !lon) {
-        alert('Merci de positionner la poubelle sur la carte avant de valider.');
-        // Optionnel : mettre la carte en surbrillance
-        document.getElementById('map').style.boxShadow = '0 0 0 4px #f87171';
-        setTimeout(() => {
-          document.getElementById('map').style.boxShadow = '';
-        }, 1500);
-        return false;
-      }
-      return true;
     }
   </script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

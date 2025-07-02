@@ -46,14 +46,6 @@ def index():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
-            # Si pas de localisation fournie, tente d'extraire depuis EXIF
-            if not latitude or not longitude:
-                from utils import get_exif_gps
-                lat_exif, lon_exif = get_exif_gps(filepath)
-                if lat_exif is not None and lon_exif is not None:
-                    latitude = lat_exif
-                    longitude = lon_exif
-
             # Extraction des features
             file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected, histogram, saturation_mean, dark_pixel_ratio, has_bright_spot = get_image_features(filepath)
 
@@ -112,10 +104,7 @@ def index():
 
     images = Image.query.order_by(Image.id.desc()).all()
     last_image = images[0] if images else None
-    # Préparer la dernière localisation connue pour le template
-    last_lat = last_image.latitude if last_image and last_image.latitude else None
-    last_lon = last_image.longitude if last_image and last_image.longitude else None
-    return render_template('index.html', images=images, last_image=last_image, last_lat=last_lat, last_lon=last_lon)
+    return render_template('index.html', images=images, last_image=last_image)
 
 
 @app.route('/annotate/<int:image_id>/<string:label>')
@@ -387,13 +376,7 @@ def visualisation():
     vides = Image.query.filter_by(annotation='vide').count()
     return render_template("visualisation.html", total=total, pleines=pleines, vides=vides)
 
-@app.route('/map')
-def map_view():
-    images = Image.query.filter(Image.latitude.isnot(None), Image.longitude.isnot(None)).all()
-    total = len(images)
-    pleines = len([img for img in images if img.annotation == 'pleine'])
-    vides = len([img for img in images if img.annotation == 'vide'])
-    return render_template('map.html', images=images, total=total, pleines=pleines, vides=vides)
+
 
 if __name__ == '__main__':
     with app.app_context():

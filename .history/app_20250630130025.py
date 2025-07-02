@@ -387,13 +387,7 @@ def visualisation():
     vides = Image.query.filter_by(annotation='vide').count()
     return render_template("visualisation.html", total=total, pleines=pleines, vides=vides)
 
-@app.route('/map')
-def map_view():
-    images = Image.query.filter(Image.latitude.isnot(None), Image.longitude.isnot(None)).all()
-    total = len(images)
-    pleines = len([img for img in images if img.annotation == 'pleine'])
-    vides = len([img for img in images if img.annotation == 'vide'])
-    return render_template('map.html', images=images, total=total, pleines=pleines, vides=vides)
+
 
 if __name__ == '__main__':
     with app.app_context():

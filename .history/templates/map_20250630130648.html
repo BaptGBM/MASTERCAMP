@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carte des Poubelles | EcoTrash</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 70vh; border-radius: 16px; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 font-sans min-h-screen flex flex-col">
+  <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-green-400">EcoTrash</h1>
+      <nav>
+        <ul class="flex gap-6 text-sm">
+          <li><a href="/" class="hover:underline">Accueil</a></li>
+          <li><a href="/dashboard" class="hover:underline">Dashboard</a></li>
+          <li><a href="/config" class="hover:underline">Configuration</a></li>
+          <li><a href="/visualisation" class="hover:underline">Visualisation</a></li>
+          <li><a href="/map" class="underline text-green-300">Carte</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 container mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold mb-6 text-center text-blue-700">Carte des Poubelles</h2>
+    <div class="flex justify-center mb-4 gap-4">
+      <button class="filter-btn bg-blue-200 hover:bg-blue-400 text-blue-900 font-bold py-2 px-4 rounded" data-filter="all">Toutes</button>
+      <button class="filter-btn bg-red-200 hover:bg-red-400 text-red-900 font-bold py-2 px-4 rounded" data-filter="pleine">Pleines</button>
+      <button class="filter-btn bg-green-200 hover:bg-green-400 text-green-900 font-bold py-2 px-4 rounded" data-filter="vide">Vides</button>
+    </div>
+    <div id="map" class="mb-8"></div>
+    <div id="counters" class="flex flex-wrap justify-center gap-8 mt-8 text-lg">
+      <div class="bg-white rounded-xl shadow px-6 py-4 flex items-center gap-2">
+        <span class="font-bold text-gray-700">Total :</span> <span class="text-blue-700 font-bold" id="count-total">{{ total }}</span>
+      </div>
+      <div class="bg-white rounded-xl shadow px-6 py-4 flex items-center gap-2">
+        <span class="font-bold text-gray-700">Pleine :</span> <span class="text-red-600 font-bold" id="count-pleines">{{ pleines }}</span>
+      </div>
+      <div class="bg-white rounded-xl shadow px-6 py-4 flex items-center gap-2">
+        <span class="font-bold text-gray-700">Vide :</span> <span class="text-green-600 font-bold" id="count-vides">{{ vides }}</span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-gray-300 py-6 text-center mt-10">
+    <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('map').setView([48.8566, 2.3522], 12); // Paris par défaut
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Données des poubelles (pour JS)
+    var poubelles = [
+      {% for img in images %}
+        {% if img.latitude and img.longitude %}
+        {
+          id: {{ img.id }},
+          lat: {{ img.latitude }},
+          lon: {{ img.longitude }},
+          annotation: '{{ img.annotation }}',
+          filename: '{{ img.filename }}',
+          date: '{{ img.date_uploaded.strftime('%d/%m/%Y %H:%M') if img.date_uploaded else '' }}',
+          width: {{ img.width }},
+          height: {{ img.height }},
+          score: {{ (img.score * 100) | round(1) if img.score else 'null' }},
+          url: '{{ url_for('static', filename='uploads/' + img.filename) }}'
+        },
+        {% endif %}
+      {% endfor %}
+    ];
+
+    var markers = [];
+
+    function addMarkers(filter) {
+      // Nettoyer la carte
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+      let countTotal = 0, countPleines = 0, countVides = 0;
+      poubelles.forEach(p => {
+        if (filter === 'all' || p.annotation === filter) {
+          countTotal++;
+          if (p.annotation === 'pleine') countPleines++;
+          if (p.annotation === 'vide') countVides++;
+          var color = (p.annotation === 'pleine') ? 'red' : 'green';
+          var marker = L.circleMarker([p.lat, p.lon], {
+            color: color,
+            radius: 10,
+            fillOpacity: 0.85
+          }).addTo(map);
+          marker.bindPopup(`
+            <div class='text-sm'>
+              <strong>${p.filename}</strong><br>
+              <span style='color:${color};font-weight:bold'>${p.annotation.charAt(0).toUpperCase() + p.annotation.slice(1)}</span><br>
+              <span>Date : ${p.date}</span><br>
+              <span>Dimensions : ${p.width}x${p.height}</span><br>
+              <span>Score : ${p.score !== null ? p.score + ' %' : 'N/A'}</span><br>
+              <a href='${p.url}' target='_blank' class='text-blue-600 underline'>Voir l'image</a>
+            </div>
+          `);
+          markers.push(marker);
+        }
+      });
+      document.getElementById('count-total').textContent = countTotal;
+      document.getElementById('count-pleines').textContent = countPleines;
+      document.getElementById('count-vides').textContent = countVides;
+    }
+
+    // Filtres
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('ring', 'ring-4', 'ring-offset-2'));
+        this.classList.add('ring', 'ring-4', 'ring-offset-2');
+        addMarkers(this.dataset.filter);
+      });
+    });
+
+    // Initialisation
+    addMarkers('all');
+  </script>
+</body>
+</html> 

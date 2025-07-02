@@ -25,7 +25,7 @@
           <a href="{{ url_for('dashboard') }}" class="hover:underline">Dashboard</a>
           <li><a href="{{ url_for('config') }}" class="hover:underline">Configuration</a></li>
           <li><a href="{{ url_for('visualisation') }}" class="hover:underline">Visualisation</a></li>
-          <li><a href="{{ url_for('map_view') }}" class="hover:underline">Carte</a></li>
+
         </ul>
       </nav>
     </div>
@@ -34,7 +34,7 @@
   <!-- HERO ACCUEIL -->
   <section id="accueil" class="py-20 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
     <h2 class="text-4xl font-bold mb-4">Gestion Intelligente des <span class="text-green-300">Poubelles Urbaines</span></h2>
-    <p class="text-lg mb-6">Analysez l'état de remplissage de vos poubelles avec la vision IA</p>
+    <p class="text-lg mb-6">Analysez l’état de remplissage de vos poubelles avec la vision IA</p>
     <a href="#upload" class="bg-green-400 text-white px-6 py-2 rounded-full shadow-md hover:bg-green-500 transition">Analyser une poubelle</a>
   </section>
 
@@ -44,7 +44,7 @@
       <!-- Zone de capture -->
       <div class="p-6 border rounded-xl shadow-md">
         <h3 class="text-xl font-semibold mb-4 text-blue-600">Upload & Informations</h3>
-        <form action="/" method="POST" enctype="multipart/form-data" onsubmit="return validateLocation();">
+        <form action="/" method="POST" enctype="multipart/form-data">
             <div class="border-dashed border-2 border-blue-400 rounded-xl p-10 text-center bg-blue-50">
               <p class="mb-2 text-gray-500">Zone de Capture</p>
           
@@ -68,17 +68,7 @@
           
               <!-- Affichage du nom de fichier -->
               <p id="fileName" class="text-sm text-gray-600 mb-4">Aucun fichier sélectionné</p>
-
-              <!-- Carte interactive pour la localisation -->
-              <div id="mapContainer" class="my-4 hidden">
-                <label class="block text-gray-600 mb-2">Localisation de la poubelle :</label>
-                <div id="map" style="height: 300px; border-radius: 12px;"></div>
-                <input type="hidden" name="latitude" id="latitudeInput">
-                <input type="hidden" name="longitude" id="longitudeInput">
-                <p class="text-xs text-gray-400 mt-2">Cliquez sur la carte pour positionner la poubelle.</p>
-              </div>
-
-              <!-- Annotation manuelle -->
+            <!-- Annotation manuelle -->
 <div id="annotationChoice" class="hidden mt-4">
     <p class="text-sm text-gray-600 mb-2">Annotation manuelle (optionnelle) :</p>
     <div class="flex flex-wrap gap-4 justify-center mb-6">
@@ -129,7 +119,7 @@
           </div>
         {% else %}
           <div class="bg-gray-100 h-72 flex items-center justify-center text-gray-400 rounded-lg">
-            <p>L'aperçu et l'analyse apparaîtront ici après l'upload.</p>
+            <p>L’aperçu et l’analyse apparaîtront ici après l'upload.</p>
           </div>
         {% endif %}
       </div>
@@ -152,16 +142,12 @@
     function updateFileName(input) {
       const fileNameDisplay = document.getElementById('fileName');
       const annotationBox = document.getElementById('annotationChoice');
-      const mapContainer = document.getElementById('mapContainer');
       if (input.files.length > 0) {
         fileNameDisplay.textContent = "Fichier sélectionné : " + input.files[0].name;
         annotationBox.classList.remove("hidden");
-        mapContainer.classList.remove("hidden");
-        setTimeout(initMap, 100); // Initialise la carte après affichage
       } else {
         fileNameDisplay.textContent = "Aucun fichier sélectionné";
         annotationBox.classList.add("hidden");
-        mapContainer.classList.add("hidden");
       }
     }
   
@@ -177,82 +163,8 @@
         selected.classList.add("ring", "ring-4", "ring-offset-2");
       }
     }
-
-    // --- Leaflet.js ---
-    let map, marker;
-    function initMap() {
-      if (map) {
-        map.remove();
-      }
-      // Si coordonnées fournies, centrer la carte dessus
-      var defaultLat = {{ last_lat if last_lat is not none else 48.8566 }};
-      var defaultLon = {{ last_lon if last_lon is not none else 2.3522 }};
-      var hasDefault = {{ 'true' if last_lat and last_lon else 'false' }};
-      map = L.map('map').setView([defaultLat, defaultLon], hasDefault ? 16 : 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap',
-        maxZoom: 19,
-      }).addTo(map);
-
-      // Ajout des poubelles existantes
-      {% for img in images %}
-        {% if img.latitude and img.longitude %}
-          L.circleMarker([
-            {{ img.latitude }},
-            {{ img.longitude }}
-          ], {
-            color: '{{ "red" if img.annotation == "pleine" else "green" }}',
-            radius: 8,
-            fillOpacity: 0.8
-          }).addTo(map).bindPopup(`{{ img.filename }}<br><span style='color:{{ "red" if img.annotation == "pleine" else "green" }}'>{{ img.annotation|capitalize }}</span>`);
-        {% endif %}
-      {% endfor %}
-
-      // Si coordonnées fournies, placer le marqueur automatiquement
-      if (hasDefault) {
-        marker = L.marker([defaultLat, defaultLon], {draggable: true}).addTo(map);
-        document.getElementById('latitudeInput').value = defaultLat;
-        document.getElementById('longitudeInput').value = defaultLon;
-        marker.on('dragend', function(ev) {
-          const pos = ev.target.getLatLng();
-          document.getElementById('latitudeInput').value = pos.lat;
-          document.getElementById('longitudeInput').value = pos.lng;
-        });
-      }
-      // Clic sur la carte pour placer ou déplacer le marqueur
-      map.on('click', function(e) {
-        const { lat, lng } = e.latlng;
-        if (marker) {
-          marker.setLatLng([lat, lng]);
-        } else {
-          marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-        }
-        document.getElementById('latitudeInput').value = lat;
-        document.getElementById('longitudeInput').value = lng;
-        marker.on('dragend', function(ev) {
-          const pos = ev.target.getLatLng();
-          document.getElementById('latitudeInput').value = pos.lat;
-          document.getElementById('longitudeInput').value = pos.lng;
-        });
-      });
-    }
-
-    function validateLocation() {
-      const lat = document.getElementById('latitudeInput').value;
-      const lon = document.getElementById('longitudeInput').value;
-      if (!lat || !lon) {
-        alert('Merci de positionner la poubelle sur la carte avant de valider.');
-        // Optionnel : mettre la carte en surbrillance
-        document.getElementById('map').style.boxShadow = '0 0 0 4px #f87171';
-        setTimeout(() => {
-          document.getElementById('map').style.boxShadow = '';
-        }, 1500);
-        return false;
-      }
-      return true;
-    }
   </script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  
 </body>
 </html>
