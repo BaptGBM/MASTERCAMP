@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoTrash - Analyse des Poubelles</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
     body {
       scroll-behavior: smooth;
@@ -14,7 +15,7 @@
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-purple-100 font-sans">
+<body class="bg-gradient-to-br from-blue-100 to-purple-100">
   <!-- HEADER -->
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
