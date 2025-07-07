@@ -424,10 +424,135 @@ def score_par_annotation():
     avg_vide = round(sum(i.score for i in vides if i.score) / len(vides), 3) if vides else 0
     return jsonify({"Pleine": avg_pleine * 100, "Vide": avg_vide * 100})
 
+@app.route('/api/features_analysis')
+def features_analysis():
+    """Analyse des caractéristiques techniques des images"""
+    images = Image.query.filter(Image.annotation.isnot(None)).all()
+    
+    pleines = [img for img in images if img.annotation == 'pleine']
+    vides = [img for img in images if img.annotation == 'vide']
+    
+    def calc_avg(imgs, attr):
+        values = [getattr(img, attr) for img in imgs if getattr(img, attr) is not None]
+        return round(sum(values) / len(values), 2) if values else 0
+    
+    return jsonify({
+        "contrast": {
+            "Pleine": calc_avg(pleines, 'contrast'),
+            "Vide": calc_avg(vides, 'contrast')
+        },
+        "saturation": {
+            "Pleine": calc_avg(pleines, 'saturation_mean'),
+            "Vide": calc_avg(vides, 'saturation_mean')
+        },
+        "dark_pixels": {
+            "Pleine": calc_avg(pleines, 'dark_pixel_ratio') * 100,
+            "Vide": calc_avg(vides, 'dark_pixel_ratio') * 100
+        }
+    })
+
+@app.route('/api/size_distribution')
+def size_distribution():
+    """Distribution des tailles de fichiers"""
+    images = Image.query.filter(Image.file_size.isnot(None)).all()
+    
+    ranges = {
+        "< 100 KB": 0,
+        "100-500 KB": 0,
+        "500KB-1MB": 0,
+        "1-2 MB": 0,
+        "> 2 MB": 0
+    }
+    
+    for img in images:
+        size_kb = img.file_size
+        if size_kb < 100:
+            ranges["< 100 KB"] += 1
+        elif size_kb < 500:
+            ranges["100-500 KB"] += 1
+        elif size_kb < 1024:
+            ranges["500KB-1MB"] += 1
+        elif size_kb < 2048:
+            ranges["1-2 MB"] += 1
+        else:
+            ranges["> 2 MB"] += 1
+    
+    return jsonify(ranges)
+
+@app.route('/api/resolution_stats')
+def resolution_stats():
+    """Statistiques des résolutions d'images"""
+    images = Image.query.filter(Image.width.isnot(None), Image.height.isnot(None)).all()
+    
+    resolutions = {}
+    for img in images:
+        res_key = f"{img.width}x{img.height}"
+        if res_key in resolutions:
+            resolutions[res_key] += 1
+        else:
+            resolutions[res_key] = 1
+    
+    # Garder seulement les 10 résolutions les plus fréquentes
+    sorted_res = sorted(resolutions.items(), key=lambda x: x[1], reverse=True)[:10]
+    
+    return jsonify(dict(sorted_res))
+
+@app.route('/api/color_analysis')
+def color_analysis():
+    """Analyse des couleurs moyennes par annotation"""
+    images = Image.query.filter(Image.annotation.isnot(None)).all()
+    
+    pleines = [img for img in images if img.annotation == 'pleine']
+    vides = [img for img in images if img.annotation == 'vide']
+    
+    def calc_color_avg(imgs):
+        if not imgs:
+            return {"r": 0, "g": 0, "b": 0}
+        
+        r_avg = sum(img.r_mean for img in imgs if img.r_mean) / len(imgs)
+        g_avg = sum(img.g_mean for img in imgs if img.g_mean) / len(imgs)
+        b_avg = sum(img.b_mean for img in imgs if img.b_mean) / len(imgs)
+        
+        return {
+            "r": round(r_avg, 1),
+            "g": round(g_avg, 1),
+            "b": round(b_avg, 1)
+        }
+    
+    return jsonify({
+        "pleine": calc_color_avg(pleines),
+        "vide": calc_color_avg(vides)
+    })
+
+@app.route('/api/monthly_trends')
+def monthly_trends():
+    """Tendances mensuelles des uploads"""
+    images = Image.query.all()
+    
+    monthly_stats = defaultdict(lambda: {"total": 0, "pleines": 0, "vides": 0})
+    
+    for img in images:
+        month_key = img.date_uploaded.strftime("%Y-%m")
+        monthly_stats[month_key]["total"] += 1
+        
+        if img.annotation == "pleine":
+            monthly_stats[month_key]["pleines"] += 1
+        elif img.annotation == "vide":
+            monthly_stats[month_key]["vides"] += 1
+    
+    # Convertir en format pour Chart.js
+    sorted_months = sorted(monthly_stats.keys())
+    
+    return jsonify({
+        "labels": sorted_months,
+        "total": [monthly_stats[month]["total"] for month in sorted_months],
+        "pleines": [monthly_stats[month]["pleines"] for month in sorted_months],
+        "vides": [monthly_stats[month]["vides"] for month in sorted_months]
+    })
+
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True, port=5002)  # Change ici le port
-

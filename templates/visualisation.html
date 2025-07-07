@@ -34,27 +34,85 @@
 
   <!-- CONTENU -->
   <main class="flex-grow container mx-auto px-6 py-12">
-    <div class="bg-white p-6 rounded-xl shadow-lg max-w-3xl mx-auto">
-      <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Répartition Pleine / Vide</h3>
-      <canvas id="pieChart" class="mb-6"></canvas>
+    <!-- Grille de graphiques -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      
+      <!-- 🥧 Répartition Pleine / Vide -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">📊 Répartition Pleine / Vide</h3>
+        <canvas id="pieChart" class="mb-4"></canvas>
+        <div class="text-sm text-center text-gray-600">
+          <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
+          <p><strong>Pleines :</strong> {{ pleines }} | <strong>Vides :</strong> {{ vides }}</p>
+        </div>
+      </div>
 
       <!-- 📊 Score moyen IA par annotation -->
-      <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Score Moyen IA</h3>
-      <canvas id="barAvgScore" class="mb-10"></canvas>
-
-      <!-- 📈 Répartition temporelle des uploads -->
-      <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Évolution des Uploads</h3>
-      <canvas id="uploadChart" class="mb-10"></canvas>
-
-      <!-- 📉 Répartition des scores individuels -->
-      <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Distribution des Scores IA</h3>
-      <canvas id="scoreChart" class="mb-10"></canvas>
-
-      <div class="text-sm text-center text-gray-600">
-        <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
-        <p><strong>Pleines :</strong> {{ pleines }}</p>
-        <p><strong>Vides :</strong> {{ vides }}</p>
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">🎯 Score Moyen IA</h3>
+        <canvas id="barAvgScore" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Précision de l'IA par type d'annotation</p>
       </div>
+
+      <!-- 📈 Évolution temporelle -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">📈 Évolution des Uploads</h3>
+        <canvas id="uploadChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Nombre d'images uploadées par jour</p>
+      </div>
+
+      <!-- 📉 Distribution des scores -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">📉 Distribution des Scores IA</h3>
+        <canvas id="scoreChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Répartition des scores de confiance</p>
+      </div>
+
+    </div>
+
+    <!-- Graphiques avancés -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+      
+      <!-- 🔍 Analyse des caractéristiques -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">🔍 Analyse Technique</h3>
+        <canvas id="featuresChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Contraste, saturation et pixels sombres</p>
+      </div>
+
+      <!-- 💾 Distribution des tailles -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">💾 Tailles de Fichiers</h3>
+        <canvas id="sizeChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Répartition par gamme de taille</p>
+      </div>
+
+      <!-- 🎨 Analyse des couleurs -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">🎨 Profil Couleur</h3>
+        <canvas id="colorChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Couleurs moyennes RGB par annotation</p>
+      </div>
+
+    </div>
+
+    <!-- Graphiques temporels avancés -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- 📅 Tendances mensuelles -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">📅 Tendances Mensuelles</h3>
+        <canvas id="monthlyChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Évolution des annotations par mois</p>
+      </div>
+
+      <!-- 📐 Résolutions populaires -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">📐 Résolutions Populaires</h3>
+        <canvas id="resolutionChart" class="mb-4"></canvas>
+        <p class="text-xs text-center text-gray-500">Top 10 des résolutions d'images</p>
+      </div>
+
     </div>
   </main>
 
@@ -169,6 +227,210 @@
           plugins: { legend: { display: false } },
           scales: {
             y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 🔍 Analyse des caractéristiques techniques -->
+  <script>
+  fetch("/api/features_analysis")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("featuresChart"), {
+        type: "radar",
+        data: {
+          labels: ["Contraste", "Saturation", "Pixels Sombres (%)"],
+          datasets: [
+            {
+              label: "Pleines",
+              data: [data.contrast.Pleine, data.saturation.Pleine, data.dark_pixels.Pleine],
+              backgroundColor: "rgba(239, 68, 68, 0.2)",
+              borderColor: "#ef4444",
+              borderWidth: 2
+            },
+            {
+              label: "Vides",
+              data: [data.contrast.Vide, data.saturation.Vide, data.dark_pixels.Vide],
+              backgroundColor: "rgba(16, 185, 129, 0.2)",
+              borderColor: "#10b981",
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            r: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 💾 Distribution des tailles de fichiers -->
+  <script>
+  fetch("/api/size_distribution")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("sizeChart"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            data: Object.values(data),
+            backgroundColor: [
+              "#3b82f6", "#8b5cf6", "#f59e0b", 
+              "#ef4444", "#10b981"
+            ],
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 🎨 Analyse des couleurs RGB -->
+  <script>
+  fetch("/api/color_analysis")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("colorChart"), {
+        type: "bar",
+        data: {
+          labels: ["Rouge", "Vert", "Bleu"],
+          datasets: [
+            {
+              label: "Pleines",
+              data: [data.pleine.r, data.pleine.g, data.pleine.b],
+              backgroundColor: ["#fca5a5", "#86efac", "#93c5fd"]
+            },
+            {
+              label: "Vides",
+              data: [data.vide.r, data.vide.g, data.vide.b],
+              backgroundColor: ["#ef4444", "#10b981", "#3b82f6"]
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 255
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 📅 Tendances mensuelles -->
+  <script>
+  fetch("/api/monthly_trends")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("monthlyChart"), {
+        type: "line",
+        data: {
+          labels: data.labels,
+          datasets: [
+            {
+              label: "Total",
+              data: data.total,
+              borderColor: "#6366f1",
+              backgroundColor: "rgba(99, 102, 241, 0.1)",
+              fill: true
+            },
+            {
+              label: "Pleines",
+              data: data.pleines,
+              borderColor: "#ef4444",
+              backgroundColor: "rgba(239, 68, 68, 0.1)"
+            },
+            {
+              label: "Vides",
+              data: data.vides,
+              borderColor: "#10b981",
+              backgroundColor: "rgba(16, 185, 129, 0.1)"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 📐 Résolutions populaires -->
+  <script>
+  fetch("/api/resolution_stats")
+    .then(res => res.json())
+    .then(data => {
+      const labels = Object.keys(data);
+      const values = Object.values(data);
+      
+      new Chart(document.getElementById("resolutionChart"), {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Nombre d'images",
+            data: values,
+            backgroundColor: "#8b5cf6",
+            borderColor: "#7c3aed",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true
+            }
           }
         }
       });
