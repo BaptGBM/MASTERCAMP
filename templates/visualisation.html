@@ -50,14 +50,6 @@
       <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Distribution des Scores IA</h3>
       <canvas id="scoreChart" class="mb-10"></canvas>
 
-      <!-- 📈 Croissance hebdomadaire -->
-      <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Croissance Hebdomadaire des Uploads</h3>
-      <canvas id="weeklyGrowthChart" class="mb-10"></canvas>
-
-      <!-- 🧠 Répartition des types d'annotations IA -->
-      <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Types d'Annotations IA</h3>
-      <canvas id="annotationTypeChart" class="mb-10"></canvas>
-
       <div class="text-sm text-center text-gray-600">
         <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
         <p><strong>Pleines :</strong> {{ pleines }}</p>
@@ -71,6 +63,7 @@
     <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
   </footer>
 
+  <!-- SCRIPTS -->
   <script>
     const pleines = {{ pleines }};
     const vides = {{ vides }};
@@ -176,57 +169,6 @@
           plugins: { legend: { display: false } },
           scales: {
             y: { beginAtZero: true, max: 100 }
-          }
-        }
-      });
-    });
-  </script>
-
-  <script>
-  fetch("/api/weekly_upload_growth")
-    .then(res => res.json())
-    .then(data => {
-      const labels = Object.keys(data);
-      const values = Object.values(data);
-      new Chart(document.getElementById("weeklyGrowthChart"), {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "Taux de croissance (%)",
-            data: values,
-            borderColor: "#f59e0b",
-            fill: false,
-            tension: 0.4
-          }]
-        },
-        options: {
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    });
-  </script>
-
-  <script>
-  fetch("/api/annotation_types")
-    .then(res => res.json())
-    .then(data => {
-      new Chart(document.getElementById("annotationTypeChart"), {
-        type: "pie",
-        data: {
-          labels: Object.keys(data),
-          datasets: [{
-            data: Object.values(data),
-            backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa"]
-          }]
-        },
-        options: {
-          plugins: {
-            legend: {
-              position: "bottom"
-            }
           }
         }
       });
