@@ -37,6 +37,19 @@
       <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Répartition Pleine / Vide</h3>
       <canvas id="pieChart" class="mb-6"></canvas>
 
+          <!-- 📊 Score moyen IA par annotation -->
+    <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Score Moyen IA</h3>
+    <canvas id="barAvgScore" class="mb-10"></canvas>
+
+    <!-- 📈 Répartition temporelle des uploads -->
+    <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Évolution des Uploads</h3>
+    <canvas id="uploadChart" class="mb-10"></canvas>
+
+    <!-- 📉 Répartition des scores individuels -->
+    <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Distribution des Scores IA</h3>
+    <canvas id="scoreChart" class="mb-6"></canvas>
+
+
       <div class="text-sm text-center text-gray-600">
         <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
         <p><strong>Pleines :</strong> {{ pleines }}</p>
@@ -91,6 +104,78 @@
 
     new Chart(document.getElementById('pieChart'), config);
   </script>
+  <!-- 📉 Distribution des scores individuels -->
+<script>
+  fetch("/api/scores")
+    .then(res => res.json())
+    .then(scores => {
+      new Chart(document.getElementById('scoreChart'), {
+        type: 'bar',
+        data: {
+          labels: scores.map((_, i) => `#${i + 1}`),
+          datasets: [{
+            label: "Score IA (%)",
+            data: scores.map(s => s * 100),
+            backgroundColor: "#6366f1"
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    });
+  </script>
+  
+  <!-- 📈 Répartition temporelle des uploads -->
+  <script>
+  fetch("/api/uploads_by_date")
+    .then(res => res.json())
+    .then(data => {
+      const labels = Object.keys(data);
+      const values = Object.values(data);
+      new Chart(document.getElementById("uploadChart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Uploads par jour",
+            data: values,
+            fill: false,
+            borderColor: "#10b981"
+          }]
+        }
+      });
+    });
+  </script>
+  
+  <!-- 📊 Moyenne des scores IA par annotation -->
+  <script>
+  fetch("/api/score_par_annotation")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("barAvgScore"), {
+        type: "bar",
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            label: "Score moyen IA (%)",
+            data: Object.values(data),
+            backgroundColor: ["#f87171", "#34d399"]
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    });
+  </script>
+  
 
 </body>
 </html>

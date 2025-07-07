@@ -8,6 +8,7 @@ from utils import get_image_features, auto_classify_score, classify_dynamic
 import uuid
 import csv
 from flask import Response, jsonify
+from collections import defaultdict
 
 
 
@@ -395,8 +396,38 @@ def map_view():
     vides = len([img for img in images if img.annotation == 'vide'])
     return render_template('map.html', images=images, total=total, pleines=pleines, vides=vides)
 
+
+@app.route('/image/<int:image_id>')
+def image_detail(image_id):
+    img = Image.query.get_or_404(image_id)
+    return render_template("image_detail.html", image=img)
+
+@app.route('/api/scores')
+def api_scores():
+    scores = [img.score for img in Image.query.filter(Image.score.isnot(None)).all()]
+    return jsonify(scores)
+
+@app.route('/api/uploads_by_date')
+def uploads_by_date():
+    images = Image.query.all()
+    stats = defaultdict(int)
+    for img in images:
+        day = img.date_uploaded.strftime("%Y-%m-%d")
+        stats[day] += 1
+    return jsonify(dict(stats))
+
+@app.route('/api/score_par_annotation')
+def score_par_annotation():
+    pleines = Image.query.filter_by(annotation='pleine').all()
+    vides = Image.query.filter_by(annotation='vide').all()
+    avg_pleine = round(sum(i.score for i in pleines if i.score) / len(pleines), 3) if pleines else 0
+    avg_vide = round(sum(i.score for i in vides if i.score) / len(vides), 3) if vides else 0
+    return jsonify({"Pleine": avg_pleine * 100, "Vide": avg_vide * 100})
+
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5001)  # Change ici le port
+    app.run(debug=True, port=5002)  # Change ici le port
 
