@@ -1,0 +1,377 @@
+/* Police ultra-moderne - Poppins pour un design contemporain */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Variables CSS pour la palette écologique moderne */
+:root {
+  /* Couleurs principales - palette écologique */
+  --primary-green: #059669;      /* Vert émeraude principal */
+  --primary-green-light: #10b981; /* Vert émeraude clair */
+  --primary-green-dark: #047857;  /* Vert émeraude foncé */
+  
+  /* Couleurs secondaires - tons naturels */
+  --secondary-blue: #0ea5e9;     /* Bleu ciel */
+  --secondary-blue-light: #38bdf8; /* Bleu ciel clair */
+  --secondary-blue-dark: #0284c7;  /* Bleu ciel foncé */
+  
+  /* Couleurs d'accent - terre et nature */
+  --accent-orange: #f59e0b;      /* Orange terre */
+  --accent-brown: #92400e;       /* Brun terre */
+  --accent-sage: #6b7280;        /* Gris sauge */
+  
+  /* Couleurs de statut */
+  --success-green: #22c55e;      /* Vert succès */
+  --warning-amber: #f59e0b;      /* Ambre avertissement */
+  --error-red: #ef4444;          /* Rouge erreur */
+  
+  /* Couleurs neutres modernes */
+  --neutral-50: #fafaf9;
+  --neutral-100: #f5f5f4;
+  --neutral-200: #e7e5e4;
+  --neutral-300: #d6d3d1;
+  --neutral-400: #a8a29e;
+  --neutral-500: #78716c;
+  --neutral-600: #57534e;
+  --neutral-700: #44403c;
+  --neutral-800: #292524;
+  --neutral-900: #1c1917;
+  
+  /* Gradients écologiques */
+  --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+  --gradient-hero: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 50%, var(--accent-orange) 100%);
+  
+  /* Ombres modernes */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Rayons de bordure */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+/* Application de la police ultra-moderne */
+* {
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Styles de base modernisés */
+body {
+  background: var(--gradient-secondary);
+  color: var(--neutral-700);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Header moderne */
+.modern-header {
+  background: var(--neutral-900);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--neutral-800);
+}
+
+.modern-header h1 {
+  color: var(--primary-green-light);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.modern-header nav a {
+  color: var(--neutral-300);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modern-header nav a:hover {
+  color: var(--primary-green-light);
+  text-decoration: none;
+}
+
+/* Section hero moderne */
+.modern-hero {
+  background: var(--gradient-hero);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.modern-hero h2 {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-hero p {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Cartes modernes */
+.modern-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--neutral-200);
+  transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+}
+
+/* Boutons modernes */
+.modern-btn {
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modern-btn-primary {
+  background: var(--primary-green);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.modern-btn-primary:hover {
+  background: var(--primary-green-dark);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.modern-btn-secondary {
+  background: var(--secondary-blue);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.modern-btn-secondary:hover {
+  background: var(--secondary-blue-dark);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.modern-btn-success {
+  background: var(--success-green);
+  color: white;
+}
+
+.modern-btn-success:hover {
+  background: #16a34a;
+}
+
+.modern-btn-warning {
+  background: var(--warning-amber);
+  color: white;
+}
+
+.modern-btn-warning:hover {
+  background: #d97706;
+}
+
+.modern-btn-error {
+  background: var(--error-red);
+  color: white;
+}
+
+.modern-btn-error:hover {
+  background: #dc2626;
+}
+
+/* Badges de statut modernes */
+.modern-badge {
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.modern-badge-full {
+  background: #fef2f2;
+  color: var(--error-red);
+  border: 1px solid #fecaca;
+}
+
+.modern-badge-empty {
+  background: #f0fdf4;
+  color: var(--success-green);
+  border: 1px solid #bbf7d0;
+}
+
+/* Formulaires modernes */
+.modern-input {
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.modern-input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.modern-select {
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  background: white;
+  cursor: pointer;
+}
+
+.modern-select:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Tableaux modernes */
+.modern-table {
+  background: white;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--neutral-200);
+}
+
+.modern-table thead {
+  background: var(--neutral-50);
+}
+
+.modern-table th {
+  font-weight: 600;
+  color: var(--neutral-700);
+  padding: 1rem;
+  text-align: left;
+}
+
+.modern-table td {
+  padding: 1rem;
+  border-top: 1px solid var(--neutral-200);
+}
+
+.modern-table tbody tr:hover {
+  background: var(--neutral-50);
+}
+
+/* Footer moderne */
+.modern-footer {
+  background: var(--neutral-900);
+  color: var(--neutral-400);
+  font-weight: 500;
+}
+
+/* Animations et transitions */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Indicateurs écologiques */
+.eco-indicator {
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.eco-indicator h3 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.eco-indicator p {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Responsive design amélioré */
+@media (max-width: 768px) {
+  .modern-hero h2 {
+    font-size: 2rem;
+  }
+  
+  .modern-card {
+    margin: 1rem;
+  }
+  
+  .modern-header nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Accessibilité améliorée */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mode sombre (optionnel) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neutral-50: #1c1917;
+    --neutral-100: #292524;
+    --neutral-200: #44403c;
+  }
+}
