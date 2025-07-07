@@ -48,8 +48,19 @@
 
     <!-- 📉 Répartition des scores individuels -->
     <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Distribution des Scores IA</h3>
-    <canvas id="scoreChart" class="mb-6"></canvas>
+    <canvas id="scoreChart" class="mb-10"></canvas>
 
+    <!-- 🎯 Précision de l'IA -->
+    <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Précision de l'IA au Fil du Temps</h3>
+    <canvas id="accuracyChart" class="mb-10"></canvas>
+
+    <!-- 📊 Répartition des tailles -->
+    <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Répartition des Tailles de Fichiers</h3>
+    <canvas id="sizeChart" class="mb-10"></canvas>
+
+    <!-- 🎨 Couleurs dominantes -->
+    <h3 class="text-xl font-semibold text-center text-gray-700 mt-10 mb-4">Couleurs Dominantes</h3>
+    <canvas id="colorChart" class="mb-10"></canvas>
 
       <div class="text-sm text-center text-gray-600">
         <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
@@ -176,7 +187,94 @@
       });
     });
   </script>
-  
+
+  <!-- 🎯 Précision de l'IA au fil du temps -->
+  <script>
+  fetch("/api/accuracy_over_time")
+    .then(res => res.json())
+    .then(data => {
+      const labels = Object.keys(data);
+      const values = Object.values(data);
+      new Chart(document.getElementById("accuracyChart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Précision (%)",
+            data: values,
+            fill: true,
+            backgroundColor: "rgba(99, 102, 241, 0.2)",
+            borderColor: "#6366f1",
+            borderWidth: 3,
+            tension: 0.4
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 📊 Répartition des tailles de fichiers -->
+  <script>
+  fetch("/api/size_distribution")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("sizeChart"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            data: Object.values(data),
+            backgroundColor: ["#10b981", "#3b82f6", "#f59e0b", "#ef4444"],
+            borderWidth: 2,
+            borderColor: "#fff"
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- 🎨 Analyse des couleurs dominantes -->
+  <script>
+  fetch("/api/color_analysis")
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById("colorChart"), {
+        type: "polarArea",
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            data: Object.values(data),
+            backgroundColor: [
+              "rgba(239, 68, 68, 0.8)",   // Rouge
+              "rgba(16, 185, 129, 0.8)",  // Vert
+              "rgba(59, 130, 246, 0.8)",  // Bleu
+              "rgba(107, 114, 128, 0.8)"  // Neutre
+            ],
+            borderColor: [
+              "#ef4444", "#10b981", "#3b82f6", "#6b7280"
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
