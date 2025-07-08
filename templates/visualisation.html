@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EcoTrash - Visualisation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue:wght@400&display=swap" rel="stylesheet">
+  <title>ZéroDebord - Visualisation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 </head>
@@ -15,7 +20,7 @@
   <!-- HEADER -->
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-green-400">EcoTrash</h1>
+      <h1 class="text-2xl font-bold text-green-400">ZéroDebord</h1>
       <nav>
         <ul class="flex gap-6 text-sm">
             <li><a href="{{ url_for('index') }}" class="hover:underline">Accueil</a></li>
@@ -36,83 +41,62 @@
 
   <!-- CONTENU -->
   <main class="flex-grow container mx-auto px-6 py-12">
-    <!-- Grille de graphiques -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Grille de graphiques principaux -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10 mb-12">
       
       <!-- Répartition Pleine / Vide -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Répartition Pleine / Vide</h3>
-        <canvas id="pieChart" class="mb-4"></canvas>
-        <div class="text-sm text-center text-gray-600">
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h3 class="text-2xl font-semibold text-center text-gray-700 mb-8">Répartition Pleine / Vide</h3>
+        <canvas id="pieChart" class="mb-6" style="height: 400px;"></canvas>
+        <div class="text-base text-center text-gray-600">
           <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
           <p><strong>Pleines :</strong> {{ pleines }} | <strong>Vides :</strong> {{ vides }}</p>
         </div>
       </div>
 
-      <!-- Score moyen IA par annotation -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Score Moyen IA</h3>
-        <canvas id="barAvgScore" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Précision de l'IA par type d'annotation</p>
-      </div>
-
       <!-- Évolution temporelle -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Évolution des Uploads</h3>
-        <canvas id="uploadChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Nombre d'images uploadées par jour</p>
-      </div>
-
-      <!-- Distribution des scores -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Distribution des Scores IA</h3>
-        <canvas id="scoreChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Répartition des scores de confiance</p>
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h3 class="text-2xl font-semibold text-center text-gray-700 mb-8">Évolution des Uploads</h3>
+        <canvas id="uploadChart" class="mb-6" style="height: 400px;"></canvas>
+        <p class="text-sm text-center text-gray-500">Nombre d'images uploadées par jour</p>
       </div>
 
     </div>
 
-    <!-- Graphiques avancés -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+    <!-- Graphiques secondaires -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
       
-      <!-- Analyse des caractéristiques -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Analyse Technique</h3>
-        <canvas id="featuresChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Contraste, saturation et pixels sombres</p>
-      </div>
-
       <!-- Distribution des tailles -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Tailles de Fichiers</h3>
-        <canvas id="sizeChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Répartition par gamme de taille</p>
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-8">Tailles de Fichiers</h3>
+        <canvas id="sizeChart" class="mb-6" style="height: 350px;"></canvas>
+        <p class="text-sm text-center text-gray-500">Répartition par gamme de taille</p>
       </div>
 
       <!-- Analyse des couleurs -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Profil Couleur</h3>
-        <canvas id="colorChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Couleurs moyennes RGB par annotation</p>
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-8">Profil Couleur</h3>
+        <canvas id="colorChart" class="mb-6" style="height: 350px;"></canvas>
+        <p class="text-sm text-center text-gray-500">Couleurs moyennes RGB par annotation</p>
       </div>
 
     </div>
 
     <!-- Graphiques temporels avancés -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
       
       <!-- Tendances mensuelles -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Tendances Mensuelles</h3>
-        <canvas id="monthlyChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Évolution des annotations par mois</p>
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-8">Tendances Mensuelles</h3>
+        <canvas id="monthlyChart" class="mb-6" style="height: 350px;"></canvas>
+        <p class="text-sm text-center text-gray-500">Évolution des annotations par mois</p>
       </div>
 
       <!-- Résolutions populaires -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Résolutions Populaires</h3>
-        <canvas id="resolutionChart" class="mb-4"></canvas>
-        <p class="text-xs text-center text-gray-500">Top 10 des résolutions d'images</p>
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-8">Résolutions Populaires</h3>
+        <canvas id="resolutionChart" class="mb-6" style="height: 350px;"></canvas>
+        <p class="text-sm text-center text-gray-500">Top 10 des résolutions d'images</p>
       </div>
 
     </div>
@@ -120,7 +104,7 @@
 
   <!-- FOOTER -->
   <footer class="bg-gray-900 text-gray-300 py-6 text-center">
-    <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
+    <p>&copy; 2025 ZéroDebord. Tous droits réservés.</p>
   </footer>
 
   <!-- SCRIPTS -->
@@ -166,29 +150,6 @@
     new Chart(document.getElementById('pieChart'), config);
   </script>
 
-  <script>
-  fetch("/api/scores")
-    .then(res => res.json())
-    .then(scores => {
-      new Chart(document.getElementById('scoreChart'), {
-        type: 'bar',
-        data: {
-          labels: scores.map((_, i) => `#${i + 1}`),
-          datasets: [{
-            label: "Score IA (%)",
-            data: scores.map(s => s * 100),
-            backgroundColor: "#6366f1"
-          }]
-        },
-        options: {
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, max: 100 }
-          }
-        }
-      });
-    });
-  </script>
 
   <script>
   fetch("/api/uploads_by_date")
@@ -211,72 +172,7 @@
     });
   </script>
 
-  <script>
-  fetch("/api/score_par_annotation")
-    .then(res => res.json())
-    .then(data => {
-      new Chart(document.getElementById("barAvgScore"), {
-        type: "bar",
-        data: {
-          labels: Object.keys(data),
-          datasets: [{
-            label: "Score moyen IA (%)",
-            data: Object.values(data),
-            backgroundColor: ["#f87171", "#34d399"]
-          }]
-        },
-        options: {
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, max: 100 }
-          }
-        }
-      });
-    });
-  </script>
 
-  <!-- Analyse des caractéristiques techniques -->
-  <script>
-  fetch("/api/features_analysis")
-    .then(res => res.json())
-    .then(data => {
-      new Chart(document.getElementById("featuresChart"), {
-        type: "radar",
-        data: {
-          labels: ["Contraste", "Saturation", "Pixels Sombres (%)"],
-          datasets: [
-            {
-              label: "Pleines",
-              data: [data.contrast.Pleine, data.saturation.Pleine, data.dark_pixels.Pleine],
-              backgroundColor: "rgba(239, 68, 68, 0.2)",
-              borderColor: "#ef4444",
-              borderWidth: 2
-            },
-            {
-              label: "Vides",
-              data: [data.contrast.Vide, data.saturation.Vide, data.dark_pixels.Vide],
-              backgroundColor: "rgba(16, 185, 129, 0.2)",
-              borderColor: "#10b981",
-              borderWidth: 2
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            }
-          },
-          scales: {
-            r: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    });
-  </script>
 
   <!-- Distribution des tailles de fichiers -->
   <script>
