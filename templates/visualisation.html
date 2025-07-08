@@ -29,7 +29,7 @@
 
   <!-- TITRE -->
   <section class="text-center py-16 bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-    <h2 class="text-4xl font-bold mb-2">📊 Visualisation des Données</h2>
+    <h2 class="text-4xl font-bold mb-2">Visualisation des Données</h2>
     <p class="text-lg">Répartition des annotations entre poubelles pleines et vides</p>
   </section>
 
@@ -38,9 +38,9 @@
     <!-- Grille de graphiques -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       
-      <!-- 🥧 Répartition Pleine / Vide -->
+      <!-- Répartition Pleine / Vide -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">📊 Répartition Pleine / Vide</h3>
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Répartition Pleine / Vide</h3>
         <canvas id="pieChart" class="mb-4"></canvas>
         <div class="text-sm text-center text-gray-600">
           <p><strong>Total analysées :</strong> {{ pleines + vides }}</p>
@@ -48,23 +48,23 @@
         </div>
       </div>
 
-      <!-- 📊 Score moyen IA par annotation -->
+      <!-- Score moyen IA par annotation -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">🎯 Score Moyen IA</h3>
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Score Moyen IA</h3>
         <canvas id="barAvgScore" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Précision de l'IA par type d'annotation</p>
       </div>
 
-      <!-- 📈 Évolution temporelle -->
+      <!-- Évolution temporelle -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">📈 Évolution des Uploads</h3>
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Évolution des Uploads</h3>
         <canvas id="uploadChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Nombre d'images uploadées par jour</p>
       </div>
 
-      <!-- 📉 Distribution des scores -->
+      <!-- Distribution des scores -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">📉 Distribution des Scores IA</h3>
+        <h3 class="text-xl font-semibold text-center text-gray-700 mb-6">Distribution des Scores IA</h3>
         <canvas id="scoreChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Répartition des scores de confiance</p>
       </div>
@@ -74,23 +74,23 @@
     <!-- Graphiques avancés -->
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
       
-      <!-- 🔍 Analyse des caractéristiques -->
+      <!-- Analyse des caractéristiques -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">🔍 Analyse Technique</h3>
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Analyse Technique</h3>
         <canvas id="featuresChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Contraste, saturation et pixels sombres</p>
       </div>
 
-      <!-- 💾 Distribution des tailles -->
+      <!-- Distribution des tailles -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">💾 Tailles de Fichiers</h3>
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Tailles de Fichiers</h3>
         <canvas id="sizeChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Répartition par gamme de taille</p>
       </div>
 
-      <!-- 🎨 Analyse des couleurs -->
+      <!-- Analyse des couleurs -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">🎨 Profil Couleur</h3>
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Profil Couleur</h3>
         <canvas id="colorChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Couleurs moyennes RGB par annotation</p>
       </div>
@@ -100,16 +100,16 @@
     <!-- Graphiques temporels avancés -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       
-      <!-- 📅 Tendances mensuelles -->
+      <!-- Tendances mensuelles -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">📅 Tendances Mensuelles</h3>
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Tendances Mensuelles</h3>
         <canvas id="monthlyChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Évolution des annotations par mois</p>
       </div>
 
-      <!-- 📐 Résolutions populaires -->
+      <!-- Résolutions populaires -->
       <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">📐 Résolutions Populaires</h3>
+        <h3 class="text-lg font-semibold text-center text-gray-700 mb-6">Résolutions Populaires</h3>
         <canvas id="resolutionChart" class="mb-4"></canvas>
         <p class="text-xs text-center text-gray-500">Top 10 des résolutions d'images</p>
       </div>
@@ -234,7 +234,7 @@
     });
   </script>
 
-  <!-- 🔍 Analyse des caractéristiques techniques -->
+  <!-- Analyse des caractéristiques techniques -->
   <script>
   fetch("/api/features_analysis")
     .then(res => res.json())
@@ -277,7 +277,7 @@
     });
   </script>
 
-  <!-- 💾 Distribution des tailles de fichiers -->
+  <!-- Distribution des tailles de fichiers -->
   <script>
   fetch("/api/size_distribution")
     .then(res => res.json())
@@ -312,7 +312,7 @@
     });
   </script>
 
-  <!-- 🎨 Analyse des couleurs RGB -->
+  <!-- Analyse des couleurs RGB -->
   <script>
   fetch("/api/color_analysis")
     .then(res => res.json())
@@ -352,7 +352,7 @@
     });
   </script>
 
-  <!-- 📅 Tendances mensuelles -->
+  <!-- Tendances mensuelles -->
   <script>
   fetch("/api/monthly_trends")
     .then(res => res.json())
@@ -400,7 +400,7 @@
     });
   </script>
 
-  <!-- 📐 Résolutions populaires -->
+  <!-- Résolutions populaires -->
   <script>
   fetch("/api/resolution_stats")
     .then(res => res.json())

@@ -29,17 +29,17 @@
 
   <!-- TITRE -->
   <section class="py-16 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-    <h2 class="text-4xl font-bold mb-2">📊 Tableau de Bord</h2>
+    <h2 class="text-4xl font-bold mb-2">Tableau de Bord</h2>
     <p class="text-lg">Historique des analyses effectuées sur les poubelles urbaines</p>
   </section>
 
 <!-- INDICATEUR GREEN IT -->
 <section class="text-center my-6">
   <div class="inline-block bg-white rounded-xl shadow px-6 py-4 text-sm text-gray-700 space-y-1 border">
-    <p>🗂️ <strong>{{ nb_images }}</strong> images analysées</p>
-    <p>💾 <strong>{{ volume_mb }}</strong> Mo stockés</p>
+    <p><strong>{{ nb_images }}</strong> images analysées</p>
+    <p><strong>{{ volume_mb }}</strong> Mo stockés</p>
     <p>
-      🌱 Empreinte estimée : 
+      Empreinte estimée : 
       <span class="font-semibold px-2 py-1 rounded text-white
         {% if co2 < 20 %} bg-green-500 
         {% elif co2 < 50 %} bg-yellow-500 

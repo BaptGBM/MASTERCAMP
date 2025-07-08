@@ -53,9 +53,11 @@
   --radius-2xl: 1.5rem;
 }
 
-/* Application de la police Apple */
+/* Application de la police Anton */
+@import url('https://fonts.googleapis.com/css2?family=Anton:wght@400&display=swap');
+
 * {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Anton', sans-serif;
   font-feature-settings: 'kern' 1, 'liga' 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
