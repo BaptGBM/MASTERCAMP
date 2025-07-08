@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EcoTrash - Analyse des Poubelles</title>
+  <title>ZéroDebord - Analyse des Poubelles</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
@@ -19,7 +19,7 @@
   <!-- HEADER -->
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-green-400">EcoTrash</h1>
+      <h1 class="text-2xl font-bold text-green-400">ZéroDebord</h1>
       <nav>
         <ul class="flex gap-6 text-sm">
           <li><a href="{{ url_for('index') }}" class="hover:underline">Accueil</a></li>
@@ -96,7 +96,7 @@
   <!-- Bouton de soumission -->
   <div class="mt-6">
     <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded shadow-md transition">
-      🚀 Analyser l'image
+      Analyser l'image
     </button>
   </div>
   
@@ -141,7 +141,7 @@
 
   <!-- FOOTER -->
   <footer class="bg-gray-900 text-gray-300 py-6 text-center">
-    <p>&copy; 2025 EcoTrash. Tous droits réservés.</p>
+    <p>&copy; 2025 ZéroDebord. Tous droits réservés.</p>
   </footer>
   <script>
     function clearAnnotation() {
