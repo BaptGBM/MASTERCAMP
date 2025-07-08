@@ -6,6 +6,7 @@ import json
 import colorsys
 from models import Rule
 
+
 def get_image_features(image_path):
     # Taille fichier en Ko
     file_size = round(os.path.getsize(image_path) / 1024, 2)  # Ko
@@ -15,65 +16,75 @@ def get_image_features(image_path):
         width, height = img.size
         pixels = list(img.getdata())
 
-        # Convertir en RGB si l'image est en mode L ou autre
+        # Convertir en RGB si nécessaire
         if img.mode != 'RGB':
             img = img.convert('RGB')
             pixels = list(img.getdata())
 
         # Moyennes R, G, B
-        r_total = sum(p[0] for p in pixels)
-        g_total = sum(p[1] for p in pixels)
-        b_total = sum(p[2] for p in pixels)
-        count = len(pixels)
+        r_mean = round(sum(p[0] for p in pixels) / len(pixels), 2)
+        g_mean = round(sum(p[1] for p in pixels) / len(pixels), 2)
+        b_mean = round(sum(p[2] for p in pixels) / len(pixels), 2)
 
-        r_mean = round(r_total / count, 2)
-        g_mean = round(g_total / count, 2)
-        b_mean = round(b_total / count, 2)
-
-         # Contraste : différence entre le pixel le plus sombre et le plus clair (en niveaux de gris)
+        # Contraste
         gray = img.convert('L')
         gray_pixels = np.array(gray.getdata())
-        dark_pixels = np.sum(gray_pixels < 30)  # Seuil de pixel sombre
+        contrast = round(max(gray_pixels) - min(gray_pixels), 2)
+
+        dark_pixels = np.sum(gray_pixels < 30)
         dark_pixel_ratio = round(dark_pixels / gray_pixels.size, 3)
+
         bright_pixels = np.sum(gray_pixels > 240)
         has_bright_spot = bool(bright_pixels > 0.01 * gray_pixels.size)
 
-
-        contrast = round(max(gray_pixels) - min(gray_pixels), 2)
-
-         # Ouvrir avec OpenCV pour la détection de contours
+        # Edges avec OpenCV
         img_cv = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         edges_detected = False
         if img_cv is not None:
-             edges = cv2.Canny(img_cv, 100, 200)
-             edge_pixels = cv2.countNonZero(edges)
-             total_pixels = img_cv.shape[0] * img_cv.shape[1]
-             edges_detected = edge_pixels / total_pixels > 0.01  # seuil arbitraire de 1%
-        
-        # Histogramme compressé (16 classes pour R, G, B)
+            edges = cv2.Canny(img_cv, 100, 200)
+            edge_pixels = cv2.countNonZero(edges)
+            total_pixels = img_cv.shape[0] * img_cv.shape[1]
+            edges_detected = edge_pixels / total_pixels > 0.01
+
+        # Histogramme compressé
         pixels_np = np.array(img.convert('RGB'))
         hist = []
-        for i in range(3):  # R, G, B
+        for i in range(3):
             channel_hist, _ = np.histogram(pixels_np[:, :, i], bins=16, range=(0, 256))
             hist.extend(channel_hist.tolist())
-        histogram = json.dumps(hist)  # Pour stocker dans la BDD
+        histogram = json.dumps(hist)
 
-        # Convertir les pixels en tableau NumPy
+        # Saturation moyenne
         pixels_np = np.array(img.convert('RGB')).reshape(-1, 3)
-
-        # Calcul de la saturation pour chaque pixel
         saturations = []
         for r, g, b in pixels_np:
-              r_, g_, b_ = r / 255.0, g / 255.0, b / 255.0
-              h, l, s = colorsys.rgb_to_hls(r_, g_, b_)
-              saturations.append(s)
-
+            h, l, s = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+            saturations.append(s)
         saturation_mean = round(np.mean(saturations), 3)
 
+        # Analyse du bas de l'image (sol)
+        img_np = np.array(gray)
+        bottom_crop = img_np[-int(0.2 * height):, :]  # 20% inférieurs
+        bright_bottom = np.sum(bottom_crop > 180)
+        total_bottom = bottom_crop.size
+        bright_ratio_bottom = round(bright_bottom / total_bottom, 3)
 
-    return file_size, width, height, r_mean, g_mean, b_mean , contrast, edges_detected , histogram , saturation_mean , dark_pixel_ratio , has_bright_spot
+    return (
+        file_size, width, height,
+        r_mean, g_mean, b_mean,
+        contrast, edges_detected,
+        histogram, saturation_mean,
+        dark_pixel_ratio, has_bright_spot,
+        bright_ratio_bottom
+    )
 
-def auto_classify_score(r_mean, g_mean, b_mean, contrast, dark_pixel_ratio, has_bright_spot, saturation_mean, file_size, width, height):
+
+def auto_classify_score(
+    r_mean, g_mean, b_mean, contrast,
+    dark_pixel_ratio, has_bright_spot,
+    saturation_mean, file_size, width, height,
+    edges_detected, bright_ratio_bottom
+):
     """
     Calcule un score de remplissage de poubelle entre 0 et 1.
     Plus c'est proche de 1, plus la poubelle est probablement pleine.
@@ -106,7 +117,7 @@ def auto_classify_score(r_mean, g_mean, b_mean, contrast, dark_pixel_ratio, has_
         score += 1 * 0.1
     total_weight += 0.1
 
-    # Règle 5 : reflet + image claire = vide
+    # Règle 5 : reflet + image claire = vide probable
     if has_bright_spot and r_mean > 150:
         score += 0 * 0.1
     else:
@@ -132,6 +143,20 @@ def auto_classify_score(r_mean, g_mean, b_mean, contrast, dark_pixel_ratio, has_
     if abs(r_mean - g_mean) > 20 or abs(g_mean - b_mean) > 20:
         score += 1 * 0.1
     total_weight += 0.1
+
+    # Règle 9 : contours nets → potentiels objets = déchets visibles
+    if edges_detected:
+        score += 1 * 0.1
+    else:
+        score += 0.3 * 0.1
+    total_weight += 0.1
+
+    # Règle 10 : clair en bas de l’image = sacs au sol = poubelle débordante
+    if bright_ratio_bottom > 0.2:
+        score += 1 * 0.3
+    else:
+        score += 0 * 0.3
+    total_weight += 0.3
 
     # Score final normalisé
     final_score = round(score / total_weight, 3)

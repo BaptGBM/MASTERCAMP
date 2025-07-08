@@ -56,12 +56,13 @@ def index():
                     longitude = lon_exif
 
             # Extraction des features
-            file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected, histogram, saturation_mean, dark_pixel_ratio, has_bright_spot = get_image_features(filepath)
+            file_size, width, height, r_mean, g_mean, b_mean, contrast, edges_detected, histogram, saturation_mean, dark_pixel_ratio, has_bright_spot, bright_ratio_bottom = get_image_features(filepath)
+
 
             score = auto_classify_score(
                 r_mean, g_mean, b_mean, contrast,
                 dark_pixel_ratio, has_bright_spot,
-                saturation_mean, file_size, width, height 
+                saturation_mean, file_size, width, height , edges_detected, bright_ratio_bottom
             )
 
             features_dict = {
@@ -277,6 +278,10 @@ def api_filter_images():
         })
 
     return jsonify(results)
+
+@app.route('/data_images/<filename>')
+def data_images(filename):
+    return send_from_directory('dataset/Data/train/no_label', filename)
 
 @app.route('/api/images')
 def api_filter_images_paginated():
