@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engagement écologique | EcoTrash</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-green-100 min-h-screen flex flex-col">
+  <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <a href="{{ url_for('index') }}" class="flex items-center gap-2">
+        <img src="{{ url_for('static', filename='zerodebord_logo.png') }}" alt="Logo ZéroDebord" class="h-10 w-auto" loading="lazy">
+      </a>
+      <nav>
+        <ul class="flex gap-6 text-sm">
+          <li><a href="{{ url_for('index') }}" class="hover:underline">Accueil</a></li>
+          <li><a href="{{ url_for('dashboard') }}" class="hover:underline">Dashboard</a></li>
+          <li><a href="{{ url_for('config') }}" class="hover:underline">Configuration</a></li>
+          <li><a href="{{ url_for('visualisation') }}" class="hover:underline">Visualisation</a></li>
+          <li><a href="{{ url_for('map_view') }}" class="hover:underline">Carte</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="container mx-auto px-4 py-10 flex-1">
+    <h2 class="text-3xl font-bold mb-6 text-center text-green-700">Notre engagement écologique</h2>
+    <section class="max-w-3xl mx-auto bg-white rounded-xl shadow p-8 mb-8">
+      <h3 class="text-xl font-semibold mb-2 text-green-800">Pourquoi EcoTrash est éco-responsable ?</h3>
+      <p class="mb-4">EcoTrash a été conçu pour limiter l’impact environnemental du numérique : compression systématique des images, mode sombre, pédagogie, et outils pour suivre l’empreinte carbone générée par le stockage et le transfert de données.</p>
+      <ul class="list-disc list-inside text-green-900 mb-4">
+        <li>Compression automatique et conversion WebP : jusqu’à 35 % d’économie de stockage.</li>
+        <li>Mode sombre généralisé : moins d’énergie consommée sur écran OLED.</li>
+        <li>Exports compressés et paginés : moins de bande passante utilisée.</li>
+        <li>Calcul dynamique de l’empreinte carbone et affichage des économies réalisées.</li>
+        <li>Encarts pédagogiques et conseils pour réduire l’impact du numérique.</li>
+      </ul>
+      <h4 class="font-bold mt-6 mb-2 text-green-700">Chiffres clés du numérique</h4>
+      <ul class="list-disc list-inside text-green-800 mb-4 text-sm">
+        <li>1 Mo stocké = ~5g CO₂ émis par an (source : GreenIT.fr)</li>
+        <li>Le numérique représente 4 % des émissions mondiales de CO₂</li>
+        <li>Compresser une image de 2 Mo en WebP permet d’économiser 0,7 Mo et 3,5g CO₂/an</li>
+      </ul>
+      <h4 class="font-bold mt-6 mb-2 text-green-700">Conseils pour réduire votre impact</h4>
+      <ul class="list-disc list-inside text-green-800 text-sm">
+        <li>Supprimez régulièrement les fichiers inutiles</li>
+        <li>Privilégiez les formats d’images modernes (WebP, JPEG XL…)</li>
+        <li>Activez le mode sombre sur vos appareils</li>
+        <li>Limitez le partage de fichiers volumineux</li>
+      </ul>
+    </section>
+    <div class="text-center">
+      <a href="{{ url_for('index') }}" class="text-green-700 underline">Retour à l’accueil</a>
+    </div>
+  </main>
+  <footer class="bg-gray-900 text-gray-300 py-6 text-center mt-10">
+    <p>&copy; 2025 EcoTrash. Tous droits réservés.
+      <a href="{{ url_for('engagement') }}" class="text-green-400 hover:underline ml-4">Engagement écologique</a>
+    </p>
+  </footer>
+</body>
+</html> 

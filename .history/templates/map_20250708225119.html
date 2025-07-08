@@ -25,9 +25,7 @@
 <body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen flex flex-col">
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <a href="{{ url_for('index') }}" class="flex items-center gap-2">
-        <img src="{{ url_for('static', filename='zerodebord_logo.png') }}" alt="Logo ZéroDebord" class="h-16 w-auto mr-2" loading="lazy">
-      </a>
+      <a href="{{ url_for('index') }}" class="text-2xl font-bold text-green-400 hover:text-green-300 transition-colors duration-200 no-underline">ZéroDebord</a>
       <nav>
         <ul class="flex gap-6 text-sm">
           <li><a href="{{ url_for('index') }}" class="hover:underline">Accueil</a></li>
@@ -68,9 +66,7 @@
   </main>
 
   <footer class="bg-gray-900 text-gray-300 py-6 text-center mt-10">
-    <p>&copy; 2025 ZéroDebord. Tous droits réservés.
-      <a href="{{ url_for('engagement') }}" class="text-green-400 hover:underline ml-4">Engagement écologique</a>
-    </p>
+    <p>&copy; 2025 ZéroDebord. Tous droits réservés.</p>
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

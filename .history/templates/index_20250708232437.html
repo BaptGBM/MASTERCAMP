@@ -21,9 +21,7 @@
   <!-- HEADER -->
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <a href="{{ url_for('index') }}" class="flex items-center gap-2">
-        <img src="{{ url_for('static', filename='zerodebord_logo.png') }}" alt="Logo ZéroDebord" class="h-16 w-auto mr-2" loading="lazy">
-      </a>
+      <a href="{{ url_for('index') }}" class="text-2xl font-bold text-green-400 hover:text-green-300 transition-colors duration-200 no-underline">ZéroDebord</a>
       <nav>
         <ul class="flex gap-6 text-sm">
           <li><a href="{{ url_for('index') }}" class="hover:underline">Accueil</a></li>
@@ -41,6 +39,18 @@
     <h2 class="text-4xl font-bold mb-4">Gestion Intelligente des <span class="text-green-300">Poubelles Urbaines</span></h2>
     <p class="text-lg mb-6">Analysez l'état de remplissage de vos poubelles avec la vision IA</p>
     <a href="#upload" class="bg-green-400 text-white px-6 py-2 rounded-full shadow-md hover:bg-green-500 transition">Analyser une poubelle</a>
+  </section>
+
+  <section class="py-4 text-center">
+    <div class="max-w-2xl mx-auto bg-green-50 border-l-4 border-green-400 text-green-900 p-4 rounded-xl shadow mb-6">
+      <h3 class="font-bold text-lg mb-1">🌱 Numérique responsable&nbsp;: chaque geste compte !</h3>
+      <p class="mb-1">Le stockage et le transfert d’images consomment de l’énergie et génèrent du CO₂. Sur EcoTrash, chaque image compressée permet d’économiser des ressources et de réduire l’empreinte carbone.</p>
+      <ul class="list-disc list-inside text-left text-green-800 text-sm">
+        <li>Privilégiez l’upload d’images légères et utiles.</li>
+        <li>Supprimez les images inutiles pour libérer de l’espace.</li>
+        <li>Activez le mode sombre pour économiser l’énergie sur écran OLED.</li>
+      </ul>
+    </div>
   </section>
 
   <!-- ZONE D'UPLOAD ET RÉSULTATS IA -->
@@ -119,7 +129,7 @@
         {% if last_image %}
           <div class="space-y-4">
             <a href="{{ url_for('image_detail', image_id=last_image.id) }}">
-                <img src="{{ url_for('static', filename='uploads/' + last_image.filename) }}" alt="Poubelle" class="w-full rounded shadow-md max-h-64 object-contain hover:scale-105 transform transition duration-300" loading="lazy">
+                <img src="{{ url_for('static', filename='uploads/' + last_image.filename) }}" alt="Poubelle" class="w-full rounded shadow-md max-h-64 object-contain hover:scale-105 transform transition duration-300">
               </a>
               
             <div class="text-sm">

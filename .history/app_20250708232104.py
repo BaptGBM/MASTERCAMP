@@ -374,20 +374,12 @@ def dashboard():
     # Approximation : 1 Mo = 5g CO2 (source variable)
     co2_estime = total_volume_mb * 5
 
-    # Calcul de l'économie réalisée grâce à la compression WebP (gain moyen 25%)
-    # On estime le poids original comme 1,35x le poids WebP (WebP = 74% du poids original)
-    gain_total_kb = sum(img.file_size * 0.35 / 0.74 for img in images.items)  # gain en Ko
-    gain_total_mb = gain_total_kb / 1024
-    gain_co2 = gain_total_mb * 5  # 1 Mo = 5g CO2
-
     return render_template(
         'dashboard.html',
         images=images,
         nb_images=nb_images,
         volume_mb=round(total_volume_mb, 2),
-        co2=round(co2_estime, 2),
-        gain_mb=round(gain_total_mb, 2),
-        gain_co2=round(gain_co2, 2)
+        co2=round(co2_estime, 2)
     )
 
 
@@ -575,12 +567,10 @@ def monthly_trends():
         "vides": [monthly_stats[month]["vides"] for month in sorted_months]
     })
 
-@app.route('/engagement')
-def engagement():
-    return render_template('engagement.html')
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True, port=5002)  # Change ici le port
+ajuste le style et 

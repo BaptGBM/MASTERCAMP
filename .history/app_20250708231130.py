@@ -364,30 +364,21 @@ def api_get_image(image_id):
 
 @app.route('/dashboard')
 def dashboard():
-    page = int(request.args.get('page', 1))
-    images = Image.query.order_by(Image.date_uploaded.desc()).paginate(page=page, per_page=10, error_out=False)
+    images = Image.query.order_by(Image.date_uploaded.desc()).all()
 
-    nb_images = images.total
-    total_volume_kb = sum(img.file_size for img in images.items)
+    nb_images = len(images)
+    total_volume_kb = sum(img.file_size for img in images)
     total_volume_mb = total_volume_kb / 1024
 
     # Approximation : 1 Mo = 5g CO2 (source variable)
     co2_estime = total_volume_mb * 5
-
-    # Calcul de l'économie réalisée grâce à la compression WebP (gain moyen 25%)
-    # On estime le poids original comme 1,35x le poids WebP (WebP = 74% du poids original)
-    gain_total_kb = sum(img.file_size * 0.35 / 0.74 for img in images.items)  # gain en Ko
-    gain_total_mb = gain_total_kb / 1024
-    gain_co2 = gain_total_mb * 5  # 1 Mo = 5g CO2
 
     return render_template(
         'dashboard.html',
         images=images,
         nb_images=nb_images,
         volume_mb=round(total_volume_mb, 2),
-        co2=round(co2_estime, 2),
-        gain_mb=round(gain_total_mb, 2),
-        gain_co2=round(gain_co2, 2)
+        co2=round(co2_estime, 1)
     )
 
 
@@ -575,9 +566,6 @@ def monthly_trends():
         "vides": [monthly_stats[month]["vides"] for month in sorted_months]
     })
 
-@app.route('/engagement')
-def engagement():
-    return render_template('engagement.html')
 
 
 if __name__ == '__main__':

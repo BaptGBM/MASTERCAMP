@@ -18,9 +18,7 @@
   <!-- HEADER -->
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <a href="{{ url_for('index') }}" class="flex items-center gap-2">
-        <img src="{{ url_for('static', filename='zerodebord_logo.png') }}" alt="Logo ZéroDebord" class="h-16 w-auto mr-2" loading="lazy">
-      </a>
+      <a href="{{ url_for('index') }}" class="text-2xl font-bold text-green-400 hover:text-green-300 transition-colors duration-200 no-underline">ZéroDebord</a>
       <nav>
         <ul class="flex gap-6 text-sm">
           <li><a href="{{ url_for('index') }}"  class="hover:underline">Accueil</a></li>
@@ -54,8 +52,8 @@
   </section>
 
 <!-- INDICATEUR GREEN IT -->
-<section class="my-6 flex flex-col md:flex-row justify-center items-stretch gap-2 text-center max-w-2xl mx-auto">
-  <div class="flex-1 min-w-[160px] max-w-[260px] bg-white rounded-xl shadow px-4 py-3 text-sm text-gray-700 space-y-1 border flex flex-col justify-center">
+<section class="text-center my-6">
+  <div class="inline-block bg-white rounded-xl shadow px-6 py-4 text-sm text-gray-700 space-y-1 border">
     <p><strong>{{ nb_images }}</strong> images analysées</p>
     <p><strong>{{ volume_mb }}</strong> Mo stockés</p>
     <p>
@@ -69,32 +67,8 @@
       </span>
     </p>
   </div>
-  <div class="flex-1 min-w-[160px] max-w-[260px] bg-green-50 border-l-4 border-green-400 text-green-900 rounded-xl shadow px-4 py-3 flex flex-col justify-center">
-    <p class="font-semibold text-green-700 mb-1">💡 Compression WebP</p>
-    <p class="text-sm">Grâce à la compression automatique, <span class="font-bold">{{ gain_mb }} Mo</span> et <span class="font-bold">{{ gain_co2 }} g CO₂</span> ont été économisés&nbsp;!</p>
-  </div>
 </section>
 
-<section class="my-4 flex flex-wrap justify-center gap-3">
-  <div class="group relative inline-flex items-center">
-    <span class="bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold shadow">
-      <span>🗜️</span> Compression WebP
-    </span>
-    <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">Toutes les images sont compressées automatiquement</span>
-  </div>
-  <div class="group relative inline-flex items-center">
-    <span class="bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold shadow">
-      <span>📄</span> Pagination
-    </span>
-    <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">Le dashboard charge 10 images par page</span>
-  </div>
-  <div class="group relative inline-flex items-center">
-    <span class="bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold shadow">
-      <span>⏳</span> Lazy Loading
-    </span>
-    <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">Les images se chargent uniquement quand elles sont visibles</span>
-  </div>
-</section>
 
 
   <!-- TABLEAU -->
@@ -144,49 +118,25 @@
           {% endif %}
         </tbody>
       </table>
-    </div>
-    {% if images.pages > 1 %}
-    <div class="flex justify-center mt-6 gap-1 flex-wrap">
-      {% set page_range = [] %}
-      {% if images.pages <= 7 %}
-        {% set page_range = range(1, images.pages+1) %}
-      {% else %}
-        {% set page_range = [1, 2] %}
-        {% if images.page > 4 %}
-          {% set _ = page_range.append('...') %}
+      {% if images.pages > 1 %}
+      <div class="flex justify-center mt-6 gap-2">
+        {% if images.has_prev %}
+          <a href="{{ url_for('dashboard', page=images.prev_num) }}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">&laquo;</a>
         {% endif %}
-        {% for p in range(images.page-1, images.page+2) %}
-          {% if 2 < p < images.pages-1 %}
-            {% set _ = page_range.append(p) %}
-          {% endif %}
+        {% for p in range(1, images.pages+1) %}
+          <a href="{{ url_for('dashboard', page=p) }}" class="px-3 py-1 rounded {{ 'bg-blue-500 text-white' if p==images.page else 'bg-gray-200 hover:bg-gray-300' }}">{{ p }}</a>
         {% endfor %}
-        {% if images.page < images.pages-3 %}
-          {% set _ = page_range.append('...') %}
+        {% if images.has_next %}
+          <a href="{{ url_for('dashboard', page=images.next_num) }}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">&raquo;</a>
         {% endif %}
-        {% set _ = page_range.extend([images.pages-1, images.pages]) %}
-      {% endif %}
-      {% if images.has_prev %}
-        <a href="{{ url_for('dashboard', page=images.prev_num) }}" class="px-3 py-1 rounded-full bg-gray-200 hover:bg-blue-200 focus:ring-2 focus:ring-blue-400 transition">&laquo;</a>
-      {% endif %}
-      {% for p in page_range %}
-        {% if p == '...' %}
-          <span class="px-3 py-1 text-gray-400">...</span>
-        {% else %}
-          <a href="{{ url_for('dashboard', page=p) }}" class="px-3 py-1 rounded-full mx-0.5 {{ 'bg-blue-600 text-white font-bold shadow' if p==images.page else 'bg-gray-100 hover:bg-blue-100 text-gray-700' }} focus:ring-2 focus:ring-blue-400 transition">{{ p }}</a>
-        {% endif %}
-      {% endfor %}
-      {% if images.has_next %}
-        <a href="{{ url_for('dashboard', page=images.next_num) }}" class="px-3 py-1 rounded-full bg-gray-200 hover:bg-blue-200 focus:ring-2 focus:ring-blue-400 transition">&raquo;</a>
+      </div>
       {% endif %}
     </div>
-    {% endif %}
   </main>
 
   <!-- FOOTER -->
   <footer class="bg-gray-900 text-gray-300 py-6 text-center">
-    <p>&copy; 2025 ZéroDebord. Tous droits réservés.
-      <a href="{{ url_for('engagement') }}" class="text-green-400 hover:underline ml-4">Engagement écologique</a>
-    </p>
+    <p>&copy; 2025 ZéroDebord. Tous droits réservés.</p>
   </footer>
 </body>
 </html>

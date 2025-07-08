@@ -18,9 +18,7 @@
   <!-- HEADER -->
   <header class="bg-gray-900 text-white py-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <a href="{{ url_for('index') }}" class="flex items-center gap-2">
-        <img src="{{ url_for('static', filename='zerodebord_logo.png') }}" alt="Logo ZéroDebord" class="h-16 w-auto mr-2" loading="lazy">
-      </a>
+      <a href="{{ url_for('index') }}" class="text-2xl font-bold text-green-400 hover:text-green-300 transition-colors duration-200 no-underline">ZéroDebord</a>
       <nav>
         <ul class="flex gap-6 text-sm">
           <li><a href="{{ url_for('index') }}"  class="hover:underline">Accueil</a></li>
@@ -54,8 +52,8 @@
   </section>
 
 <!-- INDICATEUR GREEN IT -->
-<section class="my-6 flex flex-col md:flex-row justify-center items-stretch gap-2 text-center max-w-2xl mx-auto">
-  <div class="flex-1 min-w-[160px] max-w-[260px] bg-white rounded-xl shadow px-4 py-3 text-sm text-gray-700 space-y-1 border flex flex-col justify-center">
+<section class="text-center my-6">
+  <div class="inline-block bg-white rounded-xl shadow px-6 py-4 text-sm text-gray-700 space-y-1 border">
     <p><strong>{{ nb_images }}</strong> images analysées</p>
     <p><strong>{{ volume_mb }}</strong> Mo stockés</p>
     <p>
@@ -69,32 +67,8 @@
       </span>
     </p>
   </div>
-  <div class="flex-1 min-w-[160px] max-w-[260px] bg-green-50 border-l-4 border-green-400 text-green-900 rounded-xl shadow px-4 py-3 flex flex-col justify-center">
-    <p class="font-semibold text-green-700 mb-1">💡 Compression WebP</p>
-    <p class="text-sm">Grâce à la compression automatique, <span class="font-bold">{{ gain_mb }} Mo</span> et <span class="font-bold">{{ gain_co2 }} g CO₂</span> ont été économisés&nbsp;!</p>
-  </div>
 </section>
 
-<section class="my-4 flex flex-wrap justify-center gap-3">
-  <div class="group relative inline-flex items-center">
-    <span class="bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold shadow">
-      <span>🗜️</span> Compression WebP
-    </span>
-    <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">Toutes les images sont compressées automatiquement</span>
-  </div>
-  <div class="group relative inline-flex items-center">
-    <span class="bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold shadow">
-      <span>📄</span> Pagination
-    </span>
-    <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">Le dashboard charge 10 images par page</span>
-  </div>
-  <div class="group relative inline-flex items-center">
-    <span class="bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold shadow">
-      <span>⏳</span> Lazy Loading
-    </span>
-    <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">Les images se chargent uniquement quand elles sont visibles</span>
-  </div>
-</section>
 
 
   <!-- TABLEAU -->
@@ -184,9 +158,7 @@
 
   <!-- FOOTER -->
   <footer class="bg-gray-900 text-gray-300 py-6 text-center">
-    <p>&copy; 2025 ZéroDebord. Tous droits réservés.
-      <a href="{{ url_for('engagement') }}" class="text-green-400 hover:underline ml-4">Engagement écologique</a>
-    </p>
+    <p>&copy; 2025 ZéroDebord. Tous droits réservés.</p>
   </footer>
 </body>
 </html>
