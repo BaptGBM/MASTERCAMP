@@ -6,11 +6,11 @@ from models import Image
 from utils import get_image_features, auto_classify_score, classify_dynamic
 from datetime import datetime
 
-<<<<<<< HEAD
+
 BASE_FOLDER = "dataset/Data"  # corriger ici selon ta structure
-=======
+
 BASE_FOLDER = "dataset"
->>>>>>> 508ed90 (Ajout script d'import batch)
+
 DEST_FOLDER = app.config["UPLOAD_FOLDER"]
 os.makedirs(DEST_FOLDER, exist_ok=True)
 
@@ -45,7 +45,7 @@ def process_image(img_path, annotation=None):
     score = float(auto_classify_score(r_mean, g_mean, b_mean, contrast, dark_ratio, bright, saturation, file_size, width, height))
 
     # Classification IA si pas de label
->>>>>>> 508ed90 (Ajout script d'import batch)
+
     if annotation is None:
         features_dict = {
             "r_mean": r_mean, "g_mean": g_mean, "b_mean": b_mean,
@@ -102,7 +102,7 @@ def import_all_images():
         test_folder = os.path.join(BASE_FOLDER, "test")
         for fname in os.listdir(test_folder):
             process_image(os.path.join(test_folder, fname))
-=======
+
         # 1. train/with_label/dirty → pleine
         dirty_path = os.path.join(BASE_FOLDER, "train", "with_label", "dirty")
         if os.path.isdir(dirty_path):
@@ -136,7 +136,6 @@ def import_all_images():
             for fname in os.listdir(test_path):
                 if fname.lower().endswith(('.jpg', '.jpeg', '.png')):
                     process_image(os.path.join(test_path, fname))
->>>>>>> 508ed90 (Ajout script d'import batch)
 
         db.session.commit()
         print("✅ Import terminé avec succès !")

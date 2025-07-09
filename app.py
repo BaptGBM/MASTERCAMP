@@ -10,6 +10,13 @@ import csv
 from flask import Response, jsonify
 from collections import defaultdict
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Mode de prédiction : "rules" ou "cnn_yolo"
+PREDICTION_MODE = "rules"
+
+from predict_cnn import predict_cnn
 
 
 
@@ -92,7 +99,11 @@ def index():
             if manual_annotation in ['pleine', 'vide']:
                 annotation_finale = manual_annotation
             else:
-                annotation_finale = annotation_auto if annotation_auto != "non défini" else ("pleine" if score >= 0.6 else "vide")
+                if PREDICTION_MODE == "cnn_yolo":
+                    from predict_combined import predict_final
+                    annotation_finale = predict_final(filepath) 
+                else:
+                    annotation_finale = annotation_auto if annotation_auto != "non défini" else ("pleine" if score >= 0.6 else "vide")
 
             # Enregistrement en base
             new_img = Image(
@@ -124,7 +135,15 @@ def index():
     # Préparer la dernière localisation connue pour le template
     last_lat = last_image.latitude if last_image and last_image.latitude else None
     last_lon = last_image.longitude if last_image and last_image.longitude else None
-    return render_template('index.html', images=images, last_image=last_image, last_lat=last_lat, last_lon=last_lon)
+    return  render_template(
+            'index.html',
+            images=images,
+            last_image=last_image,
+            last_lat=last_lat,
+            last_lon=last_lon,
+            current_mode=PREDICTION_MODE
+        )
+
 
 
 @app.route('/annotate/<int:image_id>/<string:label>')
@@ -361,6 +380,12 @@ def api_get_image(image_id):
         "dark_pixel_ratio": img.dark_pixel_ratio,
         "has_bright_spot": img.has_bright_spot
     })
+@app.route('/toggle_mode', methods=['POST'])
+def toggle_mode():
+    global PREDICTION_MODE
+    PREDICTION_MODE = 'cnn_yolo' if PREDICTION_MODE == 'rules' else 'rules'
+    return redirect(url_for('index'))
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -583,4 +608,4 @@ def engagement():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5002)  # Change ici le port
+    app.run(debug=True, port=5000)  # Change ici le port
